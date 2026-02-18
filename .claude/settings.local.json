@@ -2,7 +2,15 @@
   "permissions": {
     "allow": [
       "Bash(/opt/homebrew/bin/node:*)",
-      "Bash(/opt/homebrew/bin/npm run build)"
+      "Bash(/opt/homebrew/bin/npm run build)",
+      "Bash(git -C /Users/ls/Desktop/website/Blog status)",
+      "Bash(git -C /Users/ls/Desktop/website/Blog remote:*)",
+      "Bash(git -C /Users/ls/Desktop/website/Blog log --oneline -3)",
+      "Bash(git -C /Users/ls/Desktop/website/Blog branch -a)",
+      "Bash(git -C /Users/ls/Desktop/website/Blog push -u origin main)",
+      "Bash(git -C /Users/ls/Desktop/website/Blog add public/publish.html)",
+      "Bash(git -C /Users/ls/Desktop/website/Blog commit -m \"Add publish trigger page at /publish.html\")",
+      "Bash(git -C /Users/ls/Desktop/website/Blog push origin main)"
     ]
   }
 }
