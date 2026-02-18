@@ -66,13 +66,10 @@ function formatCardDate(dateStr: string): string {
   <div class="container">
 
     <!--
-      BLOG HEADER
-      Shown once at the top of the index. The tagline gives readers context
-      about what "Signals & Sensemaking" means.
+      BLOG HEADER — title only, no subtitle
     -->
     <header class="blog-header">
       <h1>Signals &amp; Sensemaking</h1>
-      <p>Field notes, frameworks, and strategic insights from WHOLE Innovation &amp; Design.</p>
     </header>
 
     <!--
@@ -114,18 +111,13 @@ function formatCardDate(dateStr: string): string {
               )}
 
               <div class="post-card__body">
-                <div class="post-card__meta">
-                  {post.category && (
-                    <span class="post-card__category">{post.category}</span>
-                  )}
-                  {post.date && (
-                    <time class="post-card__date" datetime={post.date}>
-                      {formatCardDate(post.date)}
-                    </time>
-                  )}
-                </div>
-
                 <h2 class="post-card__title">{post.title}</h2>
+
+                {post.date && (
+                  <time class="post-card__date" datetime={post.date}>
+                    {formatCardDate(post.date)}
+                  </time>
+                )}
 
                 {post.excerpt && (
                   <p class="post-card__excerpt">{post.excerpt}</p>

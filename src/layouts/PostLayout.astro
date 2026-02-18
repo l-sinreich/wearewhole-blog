@@ -87,11 +87,14 @@ function markdownToHtml(md: string): string {
     .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
     // Blockquotes — must come before paragraph processing
     .replace(/^> (.+)$/gm, '<blockquote><p>$1</p></blockquote>')
-    // Unordered lists — group consecutive list items
+    // Ordered lists — processed BEFORE unordered so numbered items get <ol> not <ul>.
+    // Tag them with a temp class, wrap runs in <ol>, then strip the temp class.
+    .replace(/^\d+\. (.+)$/gm, '<li class="ol-item">$1</li>')
+    .replace(/(<li class="ol-item">.*?<\/li>(\n<li class="ol-item">.*?<\/li>)*)/gs, '<ol>$1</ol>')
+    .replace(/ class="ol-item"/g, '')
+    // Unordered lists — group consecutive list items into <ul>
     .replace(/^[-*] (.+)$/gm, '<li>$1</li>')
-    .replace(/(<li>[\s\S]*?<\/li>)(?!\n<li>)/g, '<ul>$1</ul>')
-    // Ordered lists
-    .replace(/^\d+\. (.+)$/gm, '<li>$1</li>')
+    .replace(/(<li>.*?<\/li>(\n<li>.*?<\/li>)*)/gs, '<ul>$1</ul>')
     // Paragraphs — lines with content, not already wrapped in a block tag
     .replace(/^(?!<[hupboci]|<blockquote|<pre|<hr)(.+)$/gm, '<p>$1</p>')
     // Clean up empty lines and extra whitespace
@@ -104,28 +107,14 @@ const bodyHtml = markdownToHtml(post.body);
 ---
 
 <BaseLayout title={post.title} description={post.excerpt || undefined}>
-  <!--
-    HERO IMAGE
-    Only rendered if the post has a cover image.
-    The <img> is placed outside .container so it spans the full viewport width.
-
-    Why loading="eager"? The hero image is above the fold — we want it to
-    load immediately, not lazily. All other images in the body use lazy loading.
-  -->
-  {post.coverImage && (
-    <img
-      class="post-hero"
-      src={post.coverImage}
-      alt={post.title}
-      loading="eager"
-    />
-  )}
-
   <div class="container">
     <!--
-      POST HEADER: category chip, date, title
+      POST HEADER: title first, then category + date below.
+      Hero image sits between the header and the body, constrained to content width.
     -->
     <header class="post-header">
+      <h1 class="post-header__title">{post.title}</h1>
+
       <div class="post-header__meta">
         {post.category && (
           <!--
@@ -143,9 +132,20 @@ const bodyHtml = markdownToHtml(post.body);
           </time>
         )}
       </div>
-
-      <h1 class="post-header__title">{post.title}</h1>
     </header>
+
+    <!--
+      HERO IMAGE — inside .container so it respects content margins.
+      loading="eager" because it's above the fold.
+    -->
+    {post.coverImage && (
+      <img
+        class="post-hero"
+        src={post.coverImage}
+        alt={post.title}
+        loading="eager"
+      />
+    )}
 
     <!--
       POST BODY

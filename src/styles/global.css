@@ -69,7 +69,13 @@ img {
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 40px;
+  padding: 0 80px;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 0 24px;
+  }
 }
 
 /* ============================================================
@@ -99,7 +105,7 @@ img {
 .blog-nav .nav-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 40px;
+  padding: 0 80px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -140,17 +146,12 @@ img {
 }
 
 @media (max-width: 768px) {
-  .blog-nav .nav-title {
-    font-size: 0.85rem;
-    text-align: left;
-  }
-
   .blog-nav .nav-back {
     font-size: 0.75rem;
   }
 
   .blog-nav .nav-container {
-    padding: 0 20px;
+    padding: 0 24px;
   }
 }
 
@@ -160,25 +161,17 @@ img {
 
 .blog-header {
   padding: 80px 0 60px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  /* no border-bottom — divider removed */
 }
 
 .blog-header h1 {
   font-family: 'Archivo Narrow', sans-serif;
   font-weight: 700;
   font-size: 3rem;
-  color: var(--yellow);
-  margin-bottom: 16px;
-  letter-spacing: -0.01em;
-}
-
-.blog-header p {
-  font-family: 'Archivo', sans-serif;
-  font-weight: 100;
-  font-size: 1.2rem;
-  color: var(--text-gray);
-  max-width: 600px;
-  line-height: 1.7;
+  color: #a3bff3;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 /* ============================================================
@@ -226,18 +219,18 @@ img {
 .post-card {
   display: flex;
   flex-direction: column;
-  background-color: var(--dark-card);
+  background-color: #ffffff;
   border-radius: 4px;
   overflow: hidden;
   text-decoration: none;
   color: inherit;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .post-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
   opacity: 1;
 }
 
@@ -251,11 +244,11 @@ img {
   object-position: center;
 }
 
-/* Shown when no cover image is set — a dark placeholder */
+/* Shown when no cover image is set — a light placeholder on white cards */
 .post-card__image-placeholder {
   width: 100%;
   aspect-ratio: 16 / 9;
-  background-color: var(--medium-gray);
+  background-color: #f0f0f0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -263,7 +256,8 @@ img {
 
 .post-card__image-placeholder span {
   font-size: 2rem;
-  opacity: 0.2;
+  opacity: 0.15;
+  color: #888;
 }
 
 .post-card__body {
@@ -299,16 +293,16 @@ img {
 
 .post-card__date {
   font-family: 'Archivo', sans-serif;
-  font-weight: 100;
+  font-weight: 400;
   font-size: 0.85rem;
-  color: var(--text-gray);
+  color: #888888;
 }
 
 .post-card__title {
   font-family: 'Archivo Narrow', sans-serif;
   font-weight: 700;
   font-size: 1.25rem;
-  color: var(--white);
+  color: var(--dark-gray);
   line-height: 1.35;
   margin: 0;
 }
@@ -317,7 +311,7 @@ img {
   font-family: 'Archivo', sans-serif;
   font-weight: 100;
   font-size: 0.95rem;
-  color: var(--text-gray);
+  color: #666666;
   line-height: 1.6;
   margin-top: auto; /* push excerpt to card bottom when card is tall */
 }
@@ -410,16 +404,16 @@ img {
    ============================================================ */
 
 /*
- * The post hero is a full-width image at the top of the post page.
- * max-height caps it so it doesn't dominate on tall screens.
- * object-fit: cover + object-position: center crops from the center,
- * same as the card thumbnail — one image works for both contexts.
+ * Hero image is now inside .container so it respects the page margins.
+ * border-radius gives it a card-like finish consistent with the design.
  */
 .post-hero {
   width: 100%;
   max-height: 480px;
   object-fit: cover;
   object-position: center;
+  border-radius: 6px;
+  margin: 0 0 40px;
 }
 
 /* ============================================================
@@ -428,14 +422,14 @@ img {
 
 .post-header {
   padding: 60px 0 40px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  /* no border-bottom — divider removed */
 }
 
 .post-header__meta {
   display: flex;
   align-items: center;
   gap: 14px;
-  margin-bottom: 20px;
+  margin-top: 16px; /* now sits below the title */
 }
 
 .post-header__category {
@@ -458,12 +452,13 @@ img {
 }
 
 .post-header__title {
-  font-family: 'Archivo', sans-serif;
-  font-weight: 300;
+  font-family: 'Archivo Narrow', sans-serif;
+  font-weight: 700;
   font-size: 2.6rem;
   line-height: 1.25;
   color: var(--white);
-  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
   max-width: 800px;
 }
 
@@ -519,7 +514,9 @@ img {
 .post-body ul,
 .post-body ol {
   padding-left: 1.5em;
+  margin-left: 0;           /* no extra indent beyond body text */
   margin-bottom: 1.4em;
+  list-style-position: outside;
 }
 
 .post-body li {

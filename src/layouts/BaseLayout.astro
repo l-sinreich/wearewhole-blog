@@ -72,25 +72,14 @@ const {
   <body>
     <!--
       NAVIGATION
-      Simplified blog nav with three elements:
-        1. Logo (links back to wearewhole.co)
-        2. Blog name in the center
-        3. Back link to the main site
-
-      Why sticky? It keeps navigation accessible while reading long posts
-      without overlapping content (unlike fixed positioning).
+      Logo (links back to wearewhole.co) on the left, back link on the right.
+      No blog title in the nav — the page header carries the title instead.
     -->
     <nav class="blog-nav" aria-label="Blog navigation">
       <div class="nav-container">
         <a href="https://wearewhole.co" class="nav-logo" aria-label="WHOLE Innovation and Design">
-          <!--
-            TODO: copy logo.png from /website/images/ into /Blog/public/images/
-            then update this src to /images/logo.png
-          -->
-          <span style="font-family:'Archivo Narrow',sans-serif;font-weight:700;font-size:1.1rem;color:#FFC117;letter-spacing:0.1em;">WHOLE</span>
+          <img src="/images/logo.png" alt="WHOLE" />
         </a>
-
-        <span class="nav-title">Signals &amp; Sensemaking</span>
 
         <a href="https://wearewhole.co" class="nav-back">
           &larr; wearewhole.co
