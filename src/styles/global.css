@@ -69,7 +69,7 @@ img {
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 80px;
+  padding: 0 120px;
 }
 
 @media (max-width: 768px) {
@@ -97,7 +97,7 @@ img {
   top: 0;
   width: 100%;
   background-color: var(--dark-bg);
-  border-bottom: 1px solid rgba(255, 193, 23, 0.15);
+  /* no border-bottom — divider between nav and page removed */
   z-index: 1000;
   padding: 16px 0;
 }
@@ -105,7 +105,7 @@ img {
 .blog-nav .nav-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 80px;
+  padding: 0 120px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -160,8 +160,7 @@ img {
    ============================================================ */
 
 .blog-header {
-  padding: 80px 0 60px;
-  /* no border-bottom — divider removed */
+  padding: 40px 0 20px;
 }
 
 .blog-header h1 {
@@ -187,7 +186,7 @@ img {
  * consistent card heights without any extra CSS tricks.
  */
 .post-grid-section {
-  padding: 60px 0 80px;
+  padding: 20px 0 80px;
 }
 
 .post-grid {
@@ -220,11 +219,9 @@ img {
   display: flex;
   flex-direction: column;
   background-color: #ffffff;
-  border-radius: 4px;
   overflow: hidden;
   text-decoration: none;
   color: inherit;
-  border: 1px solid rgba(0, 0, 0, 0.08);
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
@@ -412,8 +409,7 @@ img {
   max-height: 480px;
   object-fit: cover;
   object-position: center;
-  border-radius: 6px;
-  margin: 0 0 40px;
+  margin: 24px 0 0;  /* space after back-link; title follows below */
 }
 
 /* ============================================================
@@ -421,8 +417,7 @@ img {
    ============================================================ */
 
 .post-header {
-  padding: 60px 0 40px;
-  /* no border-bottom — divider removed */
+  padding: 32px 0 24px;
 }
 
 .post-header__meta {
@@ -506,8 +501,8 @@ img {
   margin-bottom: 0.6em;
 }
 
-.post-body h1 { font-size: 2rem; }
-.post-body h2 { font-size: 1.6rem; color: var(--yellow); }
+.post-body h1 { font-size: 2rem;   text-transform: uppercase; }
+.post-body h2 { font-size: 1.6rem; text-transform: uppercase; color: var(--white); }
 .post-body h3 { font-size: 1.3rem; }
 .post-body h4 { font-size: 1.1rem; font-weight: 400; }
 
@@ -528,20 +523,64 @@ img {
   line-height: 1.7;
 }
 
-/*
- * Blockquotes use the brand yellow as a left border — a subtle nod
- * to the landing page's yellow accent throughout the site.
- */
+/* Callout — dark semi-transparent background, white non-italic text */
+.post-body .callout {
+  background-color: rgba(255, 255, 255, 0.07);
+  border-radius: 4px;
+  padding: 1em 1.5em;
+  margin: 1.5em 0;
+}
+
+.post-body .callout p {
+  color: var(--white);
+  font-style: normal;
+  margin-bottom: 0;
+}
+
+/* Quote — white left bar, white non-italic text */
 .post-body blockquote {
-  border-left: 3px solid var(--yellow);
+  border-left: 3px solid var(--white);
   margin: 2em 0;
   padding: 0.5em 0 0.5em 1.5em;
 }
 
 .post-body blockquote p {
-  font-style: italic;
-  color: var(--text-gray);
+  font-style: normal;
+  color: var(--white);
   margin-bottom: 0;
+}
+
+/* To-do list — styled checkbox squares */
+.post-body .todo-list {
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 1.4em;
+}
+
+.post-body .todo {
+  position: relative;
+  padding-left: 1.8em;
+  font-family: 'Archivo', sans-serif;
+  font-weight: 100;
+  font-size: 1.15rem;
+  color: var(--white);
+  margin-bottom: 0.4em;
+  line-height: 1.7;
+}
+
+.post-body .todo::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.35em;
+  width: 1em;
+  height: 1em;
+  border: 1.5px solid rgba(255, 255, 255, 0.5);
+  border-radius: 2px;
+}
+
+.post-body .todo--checked::before {
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
 /* Inline code */
@@ -656,8 +695,8 @@ img {
  */
 .blog-footer {
   background-color: #1c1c1c;
-  padding: 40px 0;
-  border-top: 1px solid rgba(255, 193, 23, 0.1);
+  padding: 24px 0;
+  border-top: 1px solid #ab7a00;
   text-align: center;
 }
 
@@ -665,6 +704,114 @@ img {
   color: var(--text-gray);
   font-size: 0.9rem;
   font-weight: 100;
+}
+
+/* ============================================================
+   POST — BACK LINK ("← See all posts")
+   ============================================================ */
+
+.post-back-link {
+  font-family: 'Archivo Narrow', sans-serif;
+  font-weight: 400;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-gray);
+  text-decoration: none;
+  transition: color 0.2s ease;
+  display: inline-block;
+  margin-top: 32px;
+}
+
+.post-back-link:hover {
+  color: var(--white);
+  opacity: 1;
+}
+
+.post-back-bottom {
+  padding: 40px 0 60px;
+}
+
+/* ============================================================
+   POST — RELATED POSTS SECTION
+   ============================================================ */
+
+.related-posts {
+  padding: 60px 0 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.related-posts__heading {
+  font-family: 'Archivo Narrow', sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--white);
+  margin-bottom: 24px;
+}
+
+.related-posts__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+@media (max-width: 768px) {
+  .related-posts__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.related-card {
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  text-decoration: none;
+  color: inherit;
+  overflow: hidden;
+  transition: transform 0.2s ease;
+}
+
+.related-card:hover {
+  transform: translateY(-3px);
+  opacity: 1;
+}
+
+.related-card__image {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  object-position: center;
+}
+
+.related-card__image-placeholder {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #888;
+}
+
+.related-card__body {
+  padding: 12px 16px 16px;
+}
+
+.related-card__title {
+  font-family: 'Archivo Narrow', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--dark-gray);
+  line-height: 1.35;
+  margin-bottom: 4px;
+}
+
+.related-card__date {
+  font-family: 'Archivo', sans-serif;
+  font-size: 0.8rem;
+  color: #888888;
 }
 
 /* ============================================================

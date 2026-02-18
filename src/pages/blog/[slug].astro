@@ -38,16 +38,21 @@ export const getStaticPaths = (async () => {
 
   return posts.map((post) => ({
     params: { slug: post.slug },
-    props: { post },
+    props: {
+      post,
+      // Pass up to 3 other posts as recommendations.
+      // Simple strategy: all other posts, newest-first (getAllPosts already sorts by date).
+      relatedPosts: posts.filter((p) => p.slug !== post.slug).slice(0, 3),
+    },
   }));
 }) satisfies GetStaticPaths;
 
-// Astro injects the post prop we set in getStaticPaths
-const { post } = Astro.props;
+// Astro injects the props we set in getStaticPaths
+const { post, relatedPosts } = Astro.props;
 ---
 
 <!--
-  PostLayout handles all the visual structure: hero image, header, body, tags.
-  We just pass it the post object.
+  PostLayout handles all the visual structure: hero image, header, body, tags, related posts.
+  We pass the post and the related posts.
 -->
-<PostLayout post={post} />
+<PostLayout post={post} relatedPosts={relatedPosts} />
