@@ -3,6 +3,15 @@
 // A simple trigger page for rebuilding the blog from Notion.
 // Bookmark https://wearewhole-blog.pages.dev/publish/ and click the button
 // whenever you've published new posts in Notion.
+//
+// HOW IT WORKS:
+// The button submits a POST to /api/deploy — a Cloudflare Pages Function
+// (functions/api/deploy.js) that calls the Cloudflare deploy hook server-side.
+// This avoids the CORS restriction that blocks direct browser fetches to
+// api.cloudflare.com.
+//
+// The <form> works without JavaScript (redirects on submit).
+// The <script is:inline> enhances it with in-page status feedback when JS is on.
 ---
 <!DOCTYPE html>
 <html lang="en">
@@ -88,14 +97,28 @@
       Triggers a Cloudflare Pages rebuild — fetches all published posts
       from Notion and rebuilds the blog. Takes about 30 seconds.
     </p>
-    <button id="btn" onclick="triggerDeploy()">Trigger Rebuild</button>
+
+    <!--
+      The form's native action is /api/deploy (POST).
+      If JS is disabled, the browser submits normally and Cloudflare
+      returns a redirect. If JS is enabled, the script below intercepts
+      the submit event and shows in-page feedback instead.
+    -->
+    <form id="deploy-form" method="POST" action="/api/deploy">
+      <button type="submit" id="btn">Trigger Rebuild</button>
+    </form>
+
     <p class="status" id="status"></p>
   </div>
 
-  <script>
-    async function triggerDeploy() {
-      const btn = document.getElementById('btn');
-      const status = document.getElementById('status');
+  <script is:inline>
+    const form   = document.getElementById('deploy-form');
+    const btn    = document.getElementById('btn');
+    const status = document.getElementById('status');
+
+    form.addEventListener('submit', async function (e) {
+      // Intercept the native form submit so we can show in-page feedback.
+      e.preventDefault();
 
       btn.disabled = true;
       btn.textContent = 'Triggering…';
@@ -103,10 +126,8 @@
       status.textContent = '';
 
       try {
-        const res = await fetch(
-          'https://api.cloudflare.com/client/v4/pages/webhooks/deploy_hooks/57892c34-26d2-44fe-923e-0932da06e61a',
-          { method: 'POST' }
-        );
+        const res = await fetch('/api/deploy', { method: 'POST' });
+
         if (res.ok) {
           status.className = 'status success';
           status.textContent = '✓ Deploy triggered! Your blog will update in ~30 seconds.';
@@ -120,7 +141,7 @@
         btn.disabled = false;
         btn.textContent = 'Try Again';
       }
-    }
+    });
   </script>
 </body>
 </html>
