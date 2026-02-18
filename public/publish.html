@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Publish — Signals & Sensemaking</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@400;700&family=Archivo:wght@100;400&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Archivo', sans-serif;
+      font-weight: 100;
+      background: #1a2527;
+      color: #ffffff;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .card {
+      background: #242424;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 6px;
+      padding: 60px 80px;
+      text-align: center;
+      max-width: 480px;
+      width: 90%;
+    }
+    h1 {
+      font-family: 'Archivo Narrow', sans-serif;
+      font-weight: 700;
+      font-size: 1.8rem;
+      color: #FFC117;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    p {
+      color: #b0b0b0;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin-bottom: 40px;
+    }
+    button {
+      font-family: 'Archivo Narrow', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      background: #FFC117;
+      color: #1a2527;
+      border: none;
+      padding: 16px 40px;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: opacity 0.2s ease;
+      width: 100%;
+    }
+    button:hover { opacity: 0.85; }
+    button:disabled {
+      background: #2d2d2d;
+      color: #b0b0b0;
+      cursor: not-allowed;
+      opacity: 1;
+    }
+    .status {
+      margin-top: 24px;
+      font-size: 0.9rem;
+      min-height: 1.4em;
+      color: #b0b0b0;
+    }
+    .status.success { color: #4ade80; }
+    .status.error   { color: #f87171; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Publish Blog</h1>
+    <p>
+      Triggers a Cloudflare Pages rebuild, which fetches all published posts
+      from Notion and rebuilds the blog. Takes about 30 seconds.
+    </p>
+    <button id="btn" onclick="triggerDeploy()">Trigger Rebuild</button>
+    <p class="status" id="status"></p>
+  </div>
+
+  <script>
+    async function triggerDeploy() {
+      const btn = document.getElementById('btn');
+      const status = document.getElementById('status');
+
+      btn.disabled = true;
+      btn.textContent = 'Triggering…';
+      status.className = 'status';
+      status.textContent = '';
+
+      try {
+        const res = await fetch(
+          'https://api.cloudflare.com/client/v4/pages/webhooks/deploy_hooks/57892c34-26d2-44fe-923e-0932da06e61a',
+          { method: 'POST' }
+        );
+
+        if (res.ok) {
+          status.className = 'status success';
+          status.textContent = '✓ Deploy triggered! Your blog will update in ~30 seconds.';
+          btn.textContent = 'Triggered';
+        } else {
+          throw new Error('Server returned ' + res.status);
+        }
+      } catch (err) {
+        status.className = 'status error';
+        status.textContent = '✗ Something went wrong. Check the Cloudflare dashboard.';
+        btn.disabled = false;
+        btn.textContent = 'Try Again';
+      }
+    }
+  </script>
+</body>
+</html>
