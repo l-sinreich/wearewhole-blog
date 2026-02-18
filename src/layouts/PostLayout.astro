@@ -83,14 +83,27 @@ function markdownToHtml(md: string): string {
     // Wrap consecutive todo items in <ul class="todo-list">
     .replace(/(<li class="todo[^"]*">.*?<\/li>(\n<li class="todo[^"]*">.*?<\/li>)*)/gs,
       '<ul class="todo-list">$1</ul>')
-    // ── Ordered lists (process BEFORE unordered so numbered items get <ol>) ──
+    // ── Ordered lists — level 2 first (4-space indent), then level 1 ──
+    // notion-to-md indents child items with 4 spaces per nesting level.
+    // Process deeper levels before shallower so inner <ol>/<ul> are already
+    // formed when the outer grouping regex runs.
+    .replace(/^ {4}\d+\. (.+)$/gm, '<li class="ol2-item">$1</li>')
+    .replace(/(<li class="ol2-item">.*?<\/li>(\n<li class="ol2-item">.*?<\/li>)*)/gs,
+      '<ol class="nested">$1</ol>')
+    .replace(/ class="ol2-item"/g, '')
+    // Level 1 ordered — group consecutive <li> tags and any nested <ol>/<ul> that follow
     .replace(/^\d+\. (.+)$/gm, '<li class="ol-item">$1</li>')
-    .replace(/(<li class="ol-item">.*?<\/li>(\n<li class="ol-item">.*?<\/li>)*)/gs,
+    .replace(/(<li class="ol-item">.*?<\/li>(\n(?:<li class="ol-item">.*?<\/li>|<[uo]l[^>]*>[\s\S]*?<\/[uo]l>))*)/gs,
       '<ol>$1</ol>')
     .replace(/ class="ol-item"/g, '')
-    // ── Unordered lists ──
+    // ── Unordered lists — level 2 first (4-space indent), then level 1 ──
+    .replace(/^ {4}[-*] (.+)$/gm, '<li class="ul2-item">$1</li>')
+    .replace(/(<li class="ul2-item">.*?<\/li>(\n<li class="ul2-item">.*?<\/li>)*)/gs,
+      '<ul class="nested">$1</ul>')
+    .replace(/ class="ul2-item"/g, '')
+    // Level 1 unordered — group consecutive <li> tags and any nested <ol>/<ul> that follow
     .replace(/^[-*] (.+)$/gm, '<li>$1</li>')
-    .replace(/(<li>.*?<\/li>(\n<li>.*?<\/li>)*)/gs, '<ul>$1</ul>')
+    .replace(/(<li>.*?<\/li>(\n(?:<li>.*?<\/li>|<[uo]l[^>]*>[\s\S]*?<\/[uo]l>))*)/gs, '<ul>$1</ul>')
     // ── Paragraphs — lines not already wrapped in a block tag ──
     .replace(/^(?!<[hupboci]|<blockquote|<pre|<hr|<div)(.+)$/gm, '<p>$1</p>')
     // ── Clean up ──
