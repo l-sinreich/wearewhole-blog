@@ -311,7 +311,7 @@ img {
   font-size: 0.95rem;
   color: #666666;
   line-height: 1.6;
-  margin-top: auto; /* push excerpt to card bottom when card is tall */
+  margin-top: 0;
 }
 
 /* ============================================================
