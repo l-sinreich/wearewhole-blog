@@ -153,8 +153,9 @@ export async function getAllPosts(): Promise<Post[]> {
       const slug = props.Slug?.rich_text?.[0]?.plain_text ?? page.id;
 
       // Convert the full Notion page content (all blocks) to Markdown.
+      // .parent can be undefined if the page has no body content — guard with ?? ''.
       const mdBlocks = await n2m.pageToMarkdown(page.id);
-      const body = n2m.toMarkdownString(mdBlocks).parent;
+      const body = n2m.toMarkdownString(mdBlocks).parent ?? '';
 
       // Cover image: URL-type field in Notion (not rich_text — URL fields expose
       // the value directly as .url, not via .rich_text[0].plain_text).

@@ -61,6 +61,7 @@ function formatDate(dateStr: string): string {
  * notion-to-md, this covers everything Notion produces.
  */
 function markdownToHtml(md: string): string {
+  if (!md) return '';
   return md
     // Fenced code blocks — must be processed BEFORE inline code
     .replace(/```(\w*)\n([\s\S]*?)```/g, (_m, lang, code) => {
