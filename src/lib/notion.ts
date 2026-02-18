@@ -80,8 +80,14 @@ async function downloadImage(url: string, slug: string): Promise<string | null> 
     const contentType = res.headers.get('content-type') ?? '';
     const ext = contentType.includes('png') ? 'png' : 'jpg';
     const filename = `${slug}.${ext}`;
-    const dir = 'public/images/posts';
 
+    // WHY dist/ instead of public/?
+    // downloadImage() runs mid-build, AFTER Astro has already scanned and
+    // copied the public/ directory into dist/. Writing to public/ at that
+    // point is too late — Astro won't pick up the new files for this build.
+    // Writing directly to dist/ works because Astro leaves existing files in
+    // dist/ alone; it only overwrites the HTML/JS/CSS it generates itself.
+    const dir = 'dist/images/posts';
     if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
 
     const buffer = Buffer.from(await res.arrayBuffer());
@@ -150,8 +156,9 @@ export async function getAllPosts(): Promise<Post[]> {
       const mdBlocks = await n2m.pageToMarkdown(page.id);
       const body = n2m.toMarkdownString(mdBlocks).parent;
 
-      // Cover image: optional Text field containing a public image URL.
-      const imageUrl = props['Cover Image']?.rich_text?.[0]?.plain_text ?? null;
+      // Cover image: URL-type field in Notion (not rich_text — URL fields expose
+      // the value directly as .url, not via .rich_text[0].plain_text).
+      const imageUrl = props['Cover Image']?.url ?? null;
       const coverImage = imageUrl ? await downloadImage(imageUrl, slug) : null;
 
       return {
