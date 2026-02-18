@@ -482,7 +482,7 @@ img {
   max-width: 740px;          /* Optimal reading line length (~65–75 chars) */
   margin: 0 auto;            /* center the reading column within the container */
   padding: 32px 0 80px;
-  line-height: 1.8;
+  line-height: 1.65;
 }
 
 .post-body p {
@@ -533,8 +533,8 @@ img {
   font-weight: 100;
   font-size: 1.15rem;
   color: var(--white);
-  margin-bottom: 0.4em;
-  line-height: 1.7;
+  margin-bottom: 0.15em;
+  line-height: 1.65;
 }
 
 /* Callout — dark semi-transparent background, white non-italic text */
