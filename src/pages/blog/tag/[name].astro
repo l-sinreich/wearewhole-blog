@@ -1,0 +1,86 @@
+---
+/**
+ * src/pages/blog/tag/[name].astro
+ *
+ * Tag filter pages — rendered at /blog/tag/[name]/
+ * e.g. /blog/tag/systems-thinking/
+ *
+ * STATUS: DORMANT — fully functional but not linked from nav or post cards.
+ * To activate: update tag chips in PostLayout.astro from <span> to <a>.
+ *
+ * These pages ARE built and WILL work if visited directly.
+ */
+
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { getAllPosts } from '../../../lib/notion';
+import type { GetStaticPaths } from 'astro';
+
+export const getStaticPaths = (async () => {
+  const posts = await getAllPosts();
+
+  // Collect all unique tags across all posts.
+  // posts.flatMap(p => p.tags) gives us one flat array of all tag names.
+  const tags = [...new Set(posts.flatMap(p => p.tags).filter(Boolean))];
+
+  return tags.map((tag) => ({
+    params: { name: tag.toLowerCase().replace(/\s+/g, '-') },
+    props: {
+      tag,
+      posts: posts.filter(p => p.tags.includes(tag)),
+    },
+  }));
+}) satisfies GetStaticPaths;
+
+const { tag, posts } = Astro.props;
+
+function formatCardDate(dateStr: string): string {
+  if (!dateStr) return '';
+  const date = new Date(dateStr + 'T12:00:00');
+  return new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short', day: 'numeric' }).format(date);
+}
+---
+
+<BaseLayout
+  title={`${tag} — Signals & Sensemaking`}
+  description={`Posts tagged "${tag}" from Signals & Sensemaking.`}
+>
+  <div class="container">
+
+    <header class="filter-header">
+      <p class="filter-header__label">Tag</p>
+      <h1 class="filter-header__name">{tag}</h1>
+      <a href="/blog/" class="filter-header__back">&larr; All posts</a>
+    </header>
+
+    <section class="post-grid-section">
+      {posts.length === 0 ? (
+        <div class="empty-state">
+          <p>No posts found with this tag.</p>
+        </div>
+      ) : (
+        <div class="post-grid">
+          {posts.map((post) => (
+            <a href={`/blog/${post.slug}/`} class="post-card">
+              {post.coverImage ? (
+                <img class="post-card__image" src={post.coverImage} alt={post.title} loading="lazy" />
+              ) : (
+                <div class="post-card__image-placeholder" aria-hidden="true">
+                  <span>✦</span>
+                </div>
+              )}
+              <div class="post-card__body">
+                <div class="post-card__meta">
+                  {post.category && <span class="post-card__category">{post.category}</span>}
+                  {post.date && <time class="post-card__date" datetime={post.date}>{formatCardDate(post.date)}</time>}
+                </div>
+                <h2 class="post-card__title">{post.title}</h2>
+                {post.excerpt && <p class="post-card__excerpt">{post.excerpt}</p>}
+              </div>
+            </a>
+          ))}
+        </div>
+      )}
+    </section>
+
+  </div>
+</BaseLayout>

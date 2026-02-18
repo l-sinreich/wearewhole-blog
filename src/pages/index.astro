@@ -1,0 +1,16 @@
+---
+/**
+ * src/pages/index.astro — redirects / → /blog/
+ *
+ * This file handles the root URL of the blog project.
+ * Rather than a blank page, it immediately redirects visitors to /blog/.
+ *
+ * Why redirect instead of putting content here?
+ * The blog URL structure centers on /blog/ — all routes, the sitemap,
+ * and links from the main site all point there. Having content at the root
+ * would create a duplicate page and confuse the site structure.
+ */
+---
+<meta http-equiv="refresh" content="0; url=/blog/" />
+<link rel="canonical" href="/blog/" />
+<p>Redirecting to <a href="/blog/">Signals &amp; Sensemaking</a>...</p>

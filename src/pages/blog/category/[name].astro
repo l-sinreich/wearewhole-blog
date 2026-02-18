@@ -1,0 +1,99 @@
+---
+/**
+ * src/pages/blog/category/[name].astro
+ *
+ * Category filter pages — rendered at /blog/category/[name]/
+ * e.g. /blog/category/strategy/
+ *
+ * STATUS: DORMANT — fully functional but not linked from nav or post cards.
+ * To activate: add category links in PostLayout.astro and post cards in index.astro.
+ * The URL-slug conversion (lowercase + hyphens) needs to match here and there.
+ *
+ * These pages ARE built and WILL work if visited directly — they're just
+ * not surfaced in the UI yet.
+ *
+ * Why build them now?
+ * The logic is trivial to add while the data layer is fresh. Leaving it
+ * until later means revisiting and re-understanding the whole data flow.
+ * Activating them later is just adding two anchor tags.
+ */
+
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { getAllPosts } from '../../../lib/notion';
+import type { GetStaticPaths } from 'astro';
+
+export const getStaticPaths = (async () => {
+  const posts = await getAllPosts();
+
+  // Collect all unique, non-empty categories across all posts.
+  const categories = [...new Set(
+    posts
+      .map(p => p.category)
+      .filter(Boolean)  // remove empty strings
+  )];
+
+  // Generate one route per category.
+  // The URL slug is the category name lowercased with spaces replaced by hyphens.
+  // e.g. "Strategic Design" → /blog/category/strategic-design/
+  return categories.map((category) => ({
+    params: { name: category.toLowerCase().replace(/\s+/g, '-') },
+    props: {
+      category,
+      posts: posts.filter(p => p.category === category),
+    },
+  }));
+}) satisfies GetStaticPaths;
+
+const { category, posts } = Astro.props;
+
+function formatCardDate(dateStr: string): string {
+  if (!dateStr) return '';
+  const date = new Date(dateStr + 'T12:00:00');
+  return new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short', day: 'numeric' }).format(date);
+}
+---
+
+<BaseLayout
+  title={`${category} — Signals & Sensemaking`}
+  description={`Posts in the ${category} category from Signals & Sensemaking.`}
+>
+  <div class="container">
+
+    <header class="filter-header">
+      <p class="filter-header__label">Category</p>
+      <h1 class="filter-header__name">{category}</h1>
+      <a href="/blog/" class="filter-header__back">&larr; All posts</a>
+    </header>
+
+    <section class="post-grid-section">
+      {posts.length === 0 ? (
+        <div class="empty-state">
+          <p>No posts found in this category.</p>
+        </div>
+      ) : (
+        <div class="post-grid">
+          {posts.map((post) => (
+            <a href={`/blog/${post.slug}/`} class="post-card">
+              {post.coverImage ? (
+                <img class="post-card__image" src={post.coverImage} alt={post.title} loading="lazy" />
+              ) : (
+                <div class="post-card__image-placeholder" aria-hidden="true">
+                  <span>✦</span>
+                </div>
+              )}
+              <div class="post-card__body">
+                <div class="post-card__meta">
+                  {post.category && <span class="post-card__category">{post.category}</span>}
+                  {post.date && <time class="post-card__date" datetime={post.date}>{formatCardDate(post.date)}</time>}
+                </div>
+                <h2 class="post-card__title">{post.title}</h2>
+                {post.excerpt && <p class="post-card__excerpt">{post.excerpt}</p>}
+              </div>
+            </a>
+          ))}
+        </div>
+      )}
+    </section>
+
+  </div>
+</BaseLayout>

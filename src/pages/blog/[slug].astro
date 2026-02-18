@@ -1,0 +1,53 @@
+---
+/**
+ * src/pages/blog/[slug].astro
+ *
+ * The individual post page — rendered at /blog/[slug]/
+ * e.g. /blog/boulder-startup-week/
+ *
+ * How dynamic routes work in Astro:
+ * The [slug] in the filename is a placeholder. At build time, Astro calls
+ * getStaticPaths() to find out which slugs exist and generates one HTML file
+ * for each one.
+ *
+ * For example, if you have 5 published posts, Astro generates:
+ *   /dist/blog/post-one/index.html
+ *   /dist/blog/post-two/index.html
+ *   ... etc.
+ *
+ * All of this happens at build time — there is no server, no database query
+ * when a reader visits the page. Cloudflare Pages just serves the HTML file.
+ */
+
+import PostLayout from '../../layouts/PostLayout.astro';
+import { getAllPosts } from '../../lib/notion';
+import type { GetStaticPaths } from 'astro';
+
+/**
+ * getStaticPaths returns one entry per published post.
+ * Each entry has:
+ *   params.slug — the URL segment (matched by [slug] in the filename)
+ *   props.post  — the full Post object, passed to the page component below
+ *
+ * Why pass the post as a prop instead of fetching it again?
+ * getAllPosts() fetches ALL posts once. We pass the already-fetched data
+ * as props so there's no second Notion API call per post.
+ */
+export const getStaticPaths = (async () => {
+  const posts = await getAllPosts();
+
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}) satisfies GetStaticPaths;
+
+// Astro injects the post prop we set in getStaticPaths
+const { post } = Astro.props;
+---
+
+<!--
+  PostLayout handles all the visual structure: hero image, header, body, tags.
+  We just pass it the post object.
+-->
+<PostLayout post={post} />

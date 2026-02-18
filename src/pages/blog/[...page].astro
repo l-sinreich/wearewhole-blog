@@ -1,0 +1,168 @@
+---
+/**
+ * src/pages/blog/[...page].astro
+ *
+ * The blog index page — rendered at /blog/ and /blog/2/, /blog/3/, etc.
+ * Shows all published posts as cards in a 3-column grid, paginated.
+ *
+ * Why [...page] (rest param) instead of index.astro or [page].astro?
+ * Astro's paginate() generates:
+ *   /blog/       → page 1  (params.page = undefined)
+ *   /blog/2/     → page 2  (params.page = "2")
+ *   /blog/3/     → page 3  (params.page = "3")
+ *
+ * A rest parameter [...page] matches BOTH "no segment" (the root /blog/) AND
+ * "any segment" (/blog/2/). Regular [page] would NOT match the root.
+ * index.astro would only handle /blog/ but not the paginated pages.
+ *
+ * So [...page] is the correct Astro pattern for a paginated index.
+ */
+
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getAllPosts } from '../../lib/notion';
+import type { GetStaticPaths } from 'astro';
+
+/**
+ * getStaticPaths runs at build time and tells Astro which routes to generate.
+ *
+ * Why do we need getStaticPaths even for the index?
+ * Because we're using paginate(), which generates multiple pages from one file.
+ * Without getStaticPaths, Astro wouldn't know how many pages to build.
+ */
+export const getStaticPaths = (async ({ paginate }) => {
+  const posts = await getAllPosts();
+
+  // paginate() splits the posts array into pages of 9 posts each.
+  // It returns the path objects Astro needs, including a `page` prop
+  // on each page with .data (the posts for this page), .currentPage,
+  // .lastPage, .url.next, and .url.prev.
+  return paginate(posts, { pageSize: 9 });
+}) satisfies GetStaticPaths;
+
+// Astro injects the `page` prop from paginate() — it contains all the data
+// for this specific page of results.
+const { page } = Astro.props;
+
+/**
+ * Format date for display on post cards.
+ * "2026-02-17" → "Feb 17, 2026"
+ * Using abbreviated month name for the compact card layout.
+ */
+function formatCardDate(dateStr: string): string {
+  if (!dateStr) return '';
+  const date = new Date(dateStr + 'T12:00:00');
+  return new Intl.DateTimeFormat('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  }).format(date);
+}
+---
+
+<BaseLayout
+  title={page.currentPage === 1 ? 'Signals & Sensemaking' : `Signals & Sensemaking — Page ${page.currentPage}`}
+  description="Strategic design insights, field notes, and sensemaking from WHOLE Innovation and Design."
+>
+  <div class="container">
+
+    <!--
+      BLOG HEADER
+      Shown once at the top of the index. The tagline gives readers context
+      about what "Signals & Sensemaking" means.
+    -->
+    <header class="blog-header">
+      <h1>Signals &amp; Sensemaking</h1>
+      <p>Field notes, frameworks, and strategic insights from WHOLE Innovation &amp; Design.</p>
+    </header>
+
+    <!--
+      POST GRID
+      page.data contains the posts for the current page (up to 9).
+      Each card is a full-link anchor so the entire card is clickable.
+    -->
+    <section class="post-grid-section">
+      {page.data.length === 0 ? (
+        <div class="empty-state">
+          <p>No posts yet — check back soon.</p>
+        </div>
+      ) : (
+        <div class="post-grid">
+          {page.data.map((post) => (
+            <a href={`/blog/${post.slug}/`} class="post-card">
+              <!--
+                COVER IMAGE THUMBNAIL
+                If the post has a cover image, show it at 16:9 crop.
+                If not, show a minimal dark placeholder.
+
+                The same image URL is used here (thumbnail) and on the post
+                page (hero). CSS handles the different presentations:
+                  - Card: aspect-ratio 16/9, fixed height (~200px)
+                  - Hero: max-height 480px, full width
+                object-fit: cover handles the cropping in both cases.
+              -->
+              {post.coverImage ? (
+                <img
+                  class="post-card__image"
+                  src={post.coverImage}
+                  alt={post.title}
+                  loading="lazy"
+                />
+              ) : (
+                <div class="post-card__image-placeholder" aria-hidden="true">
+                  <span>✦</span>
+                </div>
+              )}
+
+              <div class="post-card__body">
+                <div class="post-card__meta">
+                  {post.category && (
+                    <span class="post-card__category">{post.category}</span>
+                  )}
+                  {post.date && (
+                    <time class="post-card__date" datetime={post.date}>
+                      {formatCardDate(post.date)}
+                    </time>
+                  )}
+                </div>
+
+                <h2 class="post-card__title">{post.title}</h2>
+
+                {post.excerpt && (
+                  <p class="post-card__excerpt">{post.excerpt}</p>
+                )}
+              </div>
+            </a>
+          ))}
+        </div>
+      )}
+    </section>
+
+    <!--
+      PAGINATION
+      page.url.prev and page.url.next are automatically set by paginate().
+      They're null when there is no previous/next page.
+
+      Why show page numbers as text instead of links?
+      Keeping the UI minimal — readers know where they are from the context.
+      The "← Newer" / "Older →" pattern is readable and conventional.
+    -->
+    {(page.url.prev || page.url.next) && (
+      <nav class="pagination" aria-label="Pagination">
+        {page.url.prev ? (
+          <a href={page.url.prev}>&larr; Newer</a>
+        ) : (
+          <span>&larr; Newer</span>
+        )}
+
+        <span>Page {page.currentPage} of {page.lastPage}</span>
+
+        {page.url.next ? (
+          <a href={page.url.next}>Older &rarr;</a>
+        ) : (
+          <span>Older &rarr;</span>
+        )}
+      </nav>
+    )}
+
+  </div>
+</BaseLayout>
