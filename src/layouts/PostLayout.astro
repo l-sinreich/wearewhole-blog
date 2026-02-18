@@ -105,7 +105,9 @@ function markdownToHtml(md: string): string {
     .replace(/^[-*] (.+)$/gm, '<li>$1</li>')
     .replace(/(<li>.*?<\/li>(\n(?:<li>.*?<\/li>|<[uo]l[^>]*>[\s\S]*?<\/[uo]l>))*)/gs, '<ul>$1</ul>')
     // ── Paragraphs — lines not already wrapped in a block tag ──
-    .replace(/^(?!<[hupboci]|<blockquote|<pre|<hr|<div)(.+)$/gm, '<p>$1</p>')
+    // Exclusion list: h(eadings) u(l) p(re) b(lockquote via alias) o(l) c(ode) i(mg) l(i)
+    // <li>, <ul>, <ol> all start with l/u/o — must be excluded or they get double-wrapped in <p>
+    .replace(/^(?!<[hupolboci]|<blockquote|<pre|<hr|<div)(.+)$/gm, '<p>$1</p>')
     // ── Clean up ──
     .replace(/\n{3,}/g, '\n\n')
     .trim();
