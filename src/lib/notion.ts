@@ -140,33 +140,28 @@ export async function getAllPosts(): Promise<Post[]> {
     response.results.map(async (page: any) => {
       const props = page.properties;
 
-      // Slug: fall back to Notion's page ID if the Slug field is empty.
-      // This means posts always have a valid URL, even if the slug isn't set.
-      const slug = props.Slug.rich_text[0]?.plain_text ?? page.id;
+      // Every property access uses ?. on the property object itself first.
+      // This guards against a property being renamed or missing from a page —
+      // e.g. if someone adds a post before all columns are created in Notion.
+      // Without this, `props.Slug.rich_text` throws if props.Slug is undefined.
+      const slug = props.Slug?.rich_text?.[0]?.plain_text ?? page.id;
 
       // Convert the full Notion page content (all blocks) to Markdown.
-      // n2m.pageToMarkdown fetches all block children recursively.
-      // n2m.toMarkdownString turns them into a single Markdown string.
       const mdBlocks = await n2m.pageToMarkdown(page.id);
       const body = n2m.toMarkdownString(mdBlocks).parent;
 
-      // Cover image: the Cover Image property is a Text field containing a URL.
-      // We download it and store the local path, or null if there's no image.
-      const imageUrl = props['Cover Image']?.rich_text[0]?.plain_text ?? null;
+      // Cover image: optional Text field containing a public image URL.
+      const imageUrl = props['Cover Image']?.rich_text?.[0]?.plain_text ?? null;
       const coverImage = imageUrl ? await downloadImage(imageUrl, slug) : null;
 
-      // Build the Post object.
-      // The ?. (optional chaining) and ?? (nullish coalescing) operators
-      // protect against missing data — if a property wasn't filled in Notion,
-      // we get an empty string or empty array instead of a runtime error.
       return {
         id: page.id,
-        title: props.Title.title[0]?.plain_text ?? '',
+        title: props.Title?.title?.[0]?.plain_text ?? '',
         slug,
-        date: props.Date.date?.start ?? '',
-        excerpt: props.Excerpt.rich_text[0]?.plain_text ?? '',
-        category: props.Category.select?.name ?? '',
-        tags: props.Tags.multi_select.map((t: any) => t.name),
+        date: props.Date?.date?.start ?? '',
+        excerpt: props.Excerpt?.rich_text?.[0]?.plain_text ?? '',
+        category: props.Category?.select?.name ?? '',
+        tags: props.Tags?.multi_select?.map((t: any) => t.name) ?? [],
         coverImage,
         body,
       } satisfies Post;

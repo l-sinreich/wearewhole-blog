@@ -1,3 +1,9 @@
+---
+// src/pages/publish.astro → renders at /publish/
+// A simple trigger page for rebuilding the blog from Notion.
+// Bookmark https://wearewhole-blog.pages.dev/publish/ and click the button
+// whenever you've published new posts in Notion.
+---
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -79,7 +85,7 @@
   <div class="card">
     <h1>Publish Blog</h1>
     <p>
-      Triggers a Cloudflare Pages rebuild, which fetches all published posts
+      Triggers a Cloudflare Pages rebuild — fetches all published posts
       from Notion and rebuilds the blog. Takes about 30 seconds.
     </p>
     <button id="btn" onclick="triggerDeploy()">Trigger Rebuild</button>
@@ -101,7 +107,6 @@
           'https://api.cloudflare.com/client/v4/pages/webhooks/deploy_hooks/57892c34-26d2-44fe-923e-0932da06e61a',
           { method: 'POST' }
         );
-
         if (res.ok) {
           status.className = 'status success';
           status.textContent = '✓ Deploy triggered! Your blog will update in ~30 seconds.';
