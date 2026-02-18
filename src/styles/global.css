@@ -186,7 +186,7 @@ img {
  * consistent card heights without any extra CSS tricks.
  */
 .post-grid-section {
-  padding: 20px 0 0;
+  padding: 20px 0 48px;
 }
 
 .post-grid {
@@ -262,6 +262,7 @@ img {
   display: flex;
   flex-direction: column;
   flex: 1; /* stretch to fill card height */
+  justify-content: flex-start; /* pin copy to top of card body */
   gap: 10px;
 }
 
@@ -518,13 +519,12 @@ img {
   list-style-position: outside;
 }
 
-/* Nested lists (level 2) — tighter margins, same indent */
-.post-body ul ul,
-.post-body ol ol,
-.post-body ul ol,
-.post-body ol ul {
-  margin-top: 0.3em;
-  margin-bottom: 0.3em;
+/* Nested lists (level 2) — when a <ul>/<ol> is a direct child of <li>,
+   suppress the inherited margin-bottom so the sub-list doesn't add extra gap */
+.post-body li > ul,
+.post-body li > ol {
+  margin-top: 0.15em;
+  margin-bottom: 0;
   padding-left: 1.5em;
 }
 
@@ -535,6 +535,13 @@ img {
   color: var(--white);
   margin-bottom: 0.15em;
   line-height: 1.65;
+}
+
+/* Prevent <p> tags that land inside <li> from adding extra vertical space.
+   This happens when notion-to-md outputs rich-text list items that the
+   paragraph guard wraps in <p>. */
+.post-body li p {
+  margin-bottom: 0;
 }
 
 /* Callout — dark semi-transparent background, white non-italic text */
@@ -553,7 +560,7 @@ img {
 
 /* Quote — white left bar, white non-italic text */
 .post-body blockquote {
-  border-left: 3px solid var(--white);
+  border-left: 3px solid #027f7c;
   margin: 2em 0;
   padding: 0.5em 0 0.5em 1.5em;
 }
