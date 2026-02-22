@@ -1,43 +1,51 @@
-# Astro Starter Kit: Minimal
+# wearewhole-blog
 
-```sh
-npm create astro@latest -- --template minimal
+Static blog built with Astro, sourced from Notion, deployed to Cloudflare Pages.
+
+## Editing content
+
+All posts live in Notion. To write or update a post:
+
+1. Open the Notion database
+2. Write/edit your post
+3. Check the **Published** checkbox when ready
+4. Trigger a deploy (see below)
+
+Drafts (unchecked Published) are never fetched or rendered.
+
+## Publishing (triggering a deploy)
+
+There are three ways to rebuild and deploy the site:
+
+### 1. Push to `main` (code changes)
+Any commit pushed to `main` automatically triggers a full rebuild via GitHub Actions. The build fetches all published posts from Notion and deploys to Cloudflare Pages.
+
+### 2. Publish button (content-only updates)
+For Notion-only changes (no code touched), use the publish page:
+
+**`https://wearewhole.co/publish/`**
+
+Click **Trigger Rebuild**. The site rebuilds in ~30 seconds.
+
+### 3. GitHub Actions — manual trigger
+From the [Actions tab](https://github.com/l-sinreich/wearewhole-blog/actions), select **Deploy** → **Run workflow** → **Run workflow**. Useful if the publish button isn't handy.
+
+## Local dev
+
+```bash
+cp .env.example .env   # add NOTION_API_KEY + NOTION_DATABASE_ID
+npm install
+npm run dev            # localhost:4321
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+**Required env vars:**
 
-## 🚀 Project Structure
+| Var | Source |
+|-----|--------|
+| `NOTION_API_KEY` | notion.so/my-integrations |
+| `NOTION_DATABASE_ID` | Notion database URL |
 
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
+```bash
+npm run build    # full build (fetches Notion, downloads images)
+npm run preview  # preview built site
 ```
-
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
-
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
