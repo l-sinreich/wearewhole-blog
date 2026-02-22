@@ -7,7 +7,7 @@ export default defineConfig({
   // The full URL where this blog will live.
   // Astro uses this to generate canonical URLs and the sitemap.
   // Update this once your Cloudflare Pages domain is confirmed.
-  site: 'https://blog.wearewhole.co',
+  site: 'https://wearewhole.co',
 
   // output: 'static' means Astro generates pure HTML files at build time.
   // There is no server — Cloudflare Pages just serves the files in /dist.

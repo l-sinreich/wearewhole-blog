@@ -118,14 +118,12 @@ async function downloadImage(url: string, slug: string): Promise<string | null> 
  * add a module-level cache (not needed for a small blog).
  */
 export async function getAllPosts(): Promise<Post[]> {
-  // NOTE: In @notionhq/client v5, database querying moved:
-  //   v2/v3: notion.databases.query({ database_id: '...' })
-  //   v5:    notion.dataSources.query({ data_source_id: '...' })
-  //
-  // The filter/sort syntax is unchanged — only the namespace and param name differ.
-  // If this breaks after a future SDK upgrade, check here first.
-  const response = await notion.dataSources.query({
-    data_source_id: import.meta.env.NOTION_DATABASE_ID,
+  // notion.databases.query() is the standard v2 API for querying a database.
+  // We downgraded from v5 (@notionhq/client v5 removed this in favour of
+  // dataSources.query(), which is a different Notion concept requiring
+  // separate setup and is not compatible with regular databases.)
+  const response = await notion.databases.query({
+    database_id: import.meta.env.NOTION_DATABASE_ID,
 
     // Only fetch posts where the Published checkbox is checked.
     // Unchecked = draft. Drafts are completely invisible to the build.
