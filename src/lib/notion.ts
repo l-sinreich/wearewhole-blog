@@ -70,7 +70,7 @@ export interface Post {
  *
  * Returns the local path (/images/posts/slug.jpg) or null if download fails.
  */
-async function downloadImage(url: string, slug: string): Promise<string | null> {
+async function downloadImage(url: string, filename: string): Promise<string | null> {
   try {
     const res = await fetch(url);
     if (!res.ok) return null;
@@ -79,7 +79,7 @@ async function downloadImage(url: string, slug: string): Promise<string | null> 
     // We default to .jpg for everything that isn't explicitly PNG.
     const contentType = res.headers.get('content-type') ?? '';
     const ext = contentType.includes('png') ? 'png' : 'jpg';
-    const filename = `${slug}.${ext}`;
+    const filename_ = `${filename}.${ext}`;
 
     // WHY dist/ instead of public/?
     // downloadImage() runs mid-build, AFTER Astro has already scanned and
@@ -91,17 +91,46 @@ async function downloadImage(url: string, slug: string): Promise<string | null> 
     if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
 
     const buffer = Buffer.from(await res.arrayBuffer());
-    writeFileSync(path.join(dir, filename), buffer);
+    writeFileSync(path.join(dir, filename_), buffer);
 
     // Return the PUBLIC URL path (not the filesystem path).
     // This is what goes into the <img src="..."> in the HTML.
-    return `/images/posts/${filename}`;
+    return `/images/posts/${filename_}`;
   } catch (err) {
     // If the download fails for any reason, we log a warning and continue.
     // A missing image is better than a failed build.
-    console.warn(`[notion] Failed to download cover image for "${slug}":`, err);
+    console.warn(`[notion] Failed to download image "${filename}":`, err);
     return null;
   }
+}
+
+/**
+ * downloadBodyImages scans a Markdown body for image tags, downloads each
+ * referenced URL, and replaces them with local paths — same as cover images.
+ * Notion-hosted file URLs are signed S3 links that expire, so we must download
+ * them at build time rather than embedding them directly in the HTML.
+ */
+async function downloadBodyImages(body: string, slug: string): Promise<string> {
+  const imageRegex = /!\[([^\]]*)\]\((https?:\/\/[^)]+)\)/g;
+  const matches = [...body.matchAll(imageRegex)];
+  if (matches.length === 0) return body;
+
+  // Download all images concurrently, preserving index for stable filenames.
+  const replacements = await Promise.all(
+    matches.map(async ([fullMatch, alt, url], i) => {
+      const localPath = await downloadImage(url, `${slug}-img-${i}`);
+      return { fullMatch, alt, localPath };
+    })
+  );
+
+  // Apply replacements sequentially after all downloads complete.
+  let result = body;
+  for (const { fullMatch, alt, localPath } of replacements) {
+    if (localPath) {
+      result = result.replace(fullMatch, `![${alt}](${localPath})`);
+    }
+  }
+  return result;
 }
 
 // ---------------------------------------------------------------------------
@@ -150,10 +179,11 @@ export async function getAllPosts(): Promise<Post[]> {
       // Without this, `props.Slug.rich_text` throws if props.Slug is undefined.
       const slug = props.Slug?.rich_text?.[0]?.plain_text ?? page.id;
 
-      // Convert the full Notion page content (all blocks) to Markdown.
-      // .parent can be undefined if the page has no body content — guard with ?? ''.
+      // Convert the full Notion page content (all blocks) to Markdown,
+      // then download any inline images so they're served from our own domain.
       const mdBlocks = await n2m.pageToMarkdown(page.id);
-      const body = n2m.toMarkdownString(mdBlocks).parent ?? '';
+      const rawBody = n2m.toMarkdownString(mdBlocks).parent ?? '';
+      const body = await downloadBodyImages(rawBody, slug);
 
       // Cover image: URL-type field in Notion (not rich_text — URL fields expose
       // the value directly as .url, not via .rich_text[0].plain_text).
