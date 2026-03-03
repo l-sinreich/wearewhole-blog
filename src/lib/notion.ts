@@ -78,6 +78,12 @@ async function downloadImage(url: string, filename: string): Promise<string | nu
     // Detect image format from Content-Type header.
     // We default to .jpg for everything that isn't explicitly PNG.
     const contentType = res.headers.get('content-type') ?? '';
+
+    // Reject non-image responses. Some servers (e.g. WordPress) return 200 OK
+    // with an HTML page for any unrecognised URL, which would cause us to save
+    // HTML disguised as a .jpg — a broken image on the live site.
+    if (!contentType.startsWith('image/')) return null;
+
     const ext = contentType.includes('png') ? 'png' : 'jpg';
     const filename_ = `${filename}.${ext}`;
 
@@ -191,21 +197,15 @@ export async function getAllPosts(): Promise<Post[]> {
       // may silently fail. If it does, fall back to a pre-committed image in
       // public/images/posts/ named after the post slug.
       const imageUrl = props['Cover Image']?.url ?? null;
-      console.log(`[notion] ${slug}: imageUrl=${imageUrl ? imageUrl.slice(0, 60) : 'null'}`);
       let coverImage = imageUrl ? await downloadImage(imageUrl, slug) : null;
-      console.log(`[notion] ${slug}: coverImage after download=${coverImage}`);
       if (!coverImage) {
         for (const ext of ['jpg', 'jpeg', 'png', 'webp']) {
-          const localPath = `public/images/posts/${slug}.${ext}`;
-          const found = existsSync(localPath);
-          console.log(`[notion] ${slug}: checking ${localPath} → ${found}`);
-          if (found) {
+          if (existsSync(`public/images/posts/${slug}.${ext}`)) {
             coverImage = `/images/posts/${slug}.${ext}`;
             break;
           }
         }
       }
-      console.log(`[notion] ${slug}: final coverImage=${coverImage}`);
 
       return {
         id: page.id,
