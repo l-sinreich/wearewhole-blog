@@ -191,15 +191,21 @@ export async function getAllPosts(): Promise<Post[]> {
       // may silently fail. If it does, fall back to a pre-committed image in
       // public/images/posts/ named after the post slug.
       const imageUrl = props['Cover Image']?.url ?? null;
+      console.log(`[notion] ${slug}: imageUrl=${imageUrl ? imageUrl.slice(0, 60) : 'null'}`);
       let coverImage = imageUrl ? await downloadImage(imageUrl, slug) : null;
+      console.log(`[notion] ${slug}: coverImage after download=${coverImage}`);
       if (!coverImage) {
         for (const ext of ['jpg', 'jpeg', 'png', 'webp']) {
-          if (existsSync(`public/images/posts/${slug}.${ext}`)) {
+          const localPath = `public/images/posts/${slug}.${ext}`;
+          const found = existsSync(localPath);
+          console.log(`[notion] ${slug}: checking ${localPath} → ${found}`);
+          if (found) {
             coverImage = `/images/posts/${slug}.${ext}`;
             break;
           }
         }
       }
+      console.log(`[notion] ${slug}: final coverImage=${coverImage}`);
 
       return {
         id: page.id,
