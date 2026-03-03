@@ -185,22 +185,25 @@ body {
     .partner-logo img {
         max-width: 136px;
         max-height: 51px;
+        width: auto;
+        height: auto;
+        margin: 0 auto;
     }
 }
 
 .partner-logo {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 100%;
+    max-width: 250px;
 }
 
 .partner-logo img {
-    display: block;
-    max-width: 204px;
-    max-height: 76px;
-    width: auto;
+    width: 100%;
     height: auto;
-    margin: 0 auto;
+    display: block;
+}
+
+.partner-logo-large img {
+    width: 85%;
 }
 
 
