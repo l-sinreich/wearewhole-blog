@@ -180,23 +180,29 @@ body {
 @media (max-width: 768px) {
     .partners-grid {
         grid-template-columns: 1fr;
+        gap: 30px;
+    }
+    .partner-logo img {
+        max-width: 136px;
+        max-height: 51px;
     }
 }
 
 .partner-logo {
-    width: 100%;
-    max-width: 250px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .partner-logo img {
-    width: 100%;
-    height: auto;
     display: block;
+    max-width: 204px;
+    max-height: 76px;
+    width: auto;
+    height: auto;
+    margin: 0 auto;
 }
 
-.partner-logo-large img {
-    width: 85%;
-}
 
 /* ===== HOW WE WORK SECTION ===== */
 .how-we-work {
@@ -283,7 +289,7 @@ body {
 @media (max-width: 768px) {
     .verticals {
         grid-template-columns: 1fr;
-        padding: 0 30px;
+        padding: 0 15px;
     }
 }
 
@@ -704,6 +710,19 @@ footer p {
     }
 
     .hero h1 {
+        font-size: 2.5rem;
+    }
+
+    .partners h2,
+    .how-we-work h2,
+    .testimonials h2,
+    .about-text h2,
+    .contact h2 {
+        font-size: 2rem;
+    }
+
+    .practice-areas h2,
+    .capabilities h2 {
         font-size: 1.8rem;
     }
 
@@ -728,5 +747,18 @@ footer p {
         flex-direction: column;
         gap: 20px;
         text-align: center;
+    }
+
+    .container {
+        padding: 0 20px;
+    }
+
+    .intro-text,
+    .about-text p {
+        padding: 0 10px;
+    }
+
+    .about-text {
+        padding: 60px 30px;
     }
 }
