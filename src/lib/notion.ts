@@ -187,8 +187,19 @@ export async function getAllPosts(): Promise<Post[]> {
 
       // Cover image: URL-type field in Notion (not rich_text — URL fields expose
       // the value directly as .url, not via .rich_text[0].plain_text).
+      // Notion-hosted file URLs are signed S3 links that expire, so the download
+      // may silently fail. If it does, fall back to a pre-committed image in
+      // public/images/posts/ named after the post slug.
       const imageUrl = props['Cover Image']?.url ?? null;
-      const coverImage = imageUrl ? await downloadImage(imageUrl, slug) : null;
+      let coverImage = imageUrl ? await downloadImage(imageUrl, slug) : null;
+      if (!coverImage) {
+        for (const ext of ['jpg', 'jpeg', 'png', 'webp']) {
+          if (existsSync(`public/images/posts/${slug}.${ext}`)) {
+            coverImage = `/images/posts/${slug}.${ext}`;
+            break;
+          }
+        }
+      }
 
       return {
         id: page.id,
