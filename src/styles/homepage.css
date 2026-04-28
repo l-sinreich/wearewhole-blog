@@ -153,6 +153,17 @@ body {
     color: var(--white);
 }
 
+.hero-subtext {
+    font-family: 'Archivo', sans-serif !important;
+    font-weight: 300 !important;
+}
+
+@media (max-width: 768px) {
+    .hero-break {
+        display: none;
+    }
+}
+
 /* ===== PARTNERS SECTION ===== */
 .partners {
     background-color: #ffffff;
@@ -210,7 +221,7 @@ body {
 /* ===== HOW WE WORK SECTION ===== */
 .how-we-work {
     background-color: #1A2527;
-    padding: 100px 0;
+    padding: 160px 0 360px;
 }
 
 .how-we-work h2 {
@@ -320,8 +331,8 @@ body {
 
 .practice {
     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-    padding-bottom: 20px;
-    padding-top: 20px;
+    padding-bottom: 40px;
+    padding-top: 40px;
 }
 
 .practice h4 {
@@ -405,10 +416,13 @@ body {
 
 .capabilities-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr;
     gap: 30px;
     margin-top: 60px;
     align-items: start;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .capability {
