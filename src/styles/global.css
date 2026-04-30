@@ -192,7 +192,7 @@ img {
 .post-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 30px;
+  gap: 16px;
 }
 
 @media (max-width: 1024px) {
@@ -218,7 +218,7 @@ img {
 .post-card {
   display: flex;
   flex-direction: column;
-  background-color: #ffffff;
+  background-color: #000000;
   overflow: hidden;
   text-decoration: none;
   color: inherit;
@@ -241,11 +241,11 @@ img {
   object-position: center;
 }
 
-/* Shown when no cover image is set — a light placeholder on white cards */
+/* Shown when no cover image is set — a dark placeholder on black cards */
 .post-card__image-placeholder {
   width: 100%;
   aspect-ratio: 16 / 9;
-  background-color: #f0f0f0;
+  background-color: #1a1a1a;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -254,7 +254,7 @@ img {
 .post-card__image-placeholder span {
   font-size: 2rem;
   opacity: 0.15;
-  color: #888;
+  color: #555;
 }
 
 .post-card__body {
@@ -293,14 +293,14 @@ img {
   font-family: 'Archivo', sans-serif;
   font-weight: 400;
   font-size: 0.85rem;
-  color: #888888;
+  color: #aaaaaa;
 }
 
 .post-card__title {
   font-family: 'Archivo Narrow', sans-serif;
   font-weight: 700;
   font-size: 1.25rem;
-  color: var(--dark-gray);
+  color: #ffffff;
   line-height: 1.35;
   margin: 0;
 }
@@ -309,7 +309,7 @@ img {
   font-family: 'Archivo', sans-serif;
   font-weight: 100;
   font-size: 0.95rem;
-  color: #666666;
+  color: #cccccc;
   line-height: 1.6;
   margin-top: 0;
 }
