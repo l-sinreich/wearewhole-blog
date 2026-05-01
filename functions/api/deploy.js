@@ -27,6 +27,7 @@ export async function onRequestPost(context) {
         'Authorization': `Bearer ${token}`,
         'Accept': 'application/vnd.github+json',
         'Content-Type': 'application/json',
+        'User-Agent': 'wearewhole-blog-publisher',
       },
       body: JSON.stringify({ ref: 'main' }),
     });
