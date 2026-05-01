@@ -133,11 +133,12 @@
           status.textContent = '✓ Deploy triggered! Your blog will update in ~30 seconds.';
           btn.textContent = 'Triggered';
         } else {
-          throw new Error('Server returned ' + res.status);
+          const data = await res.json().catch(() => ({}));
+          throw new Error('HTTP ' + res.status + ': ' + (data.body || data.error || JSON.stringify(data)));
         }
       } catch (err) {
         status.className = 'status error';
-        status.textContent = '✗ Something went wrong. Check the Cloudflare dashboard.';
+        status.textContent = '✗ ' + err.message;
         btn.disabled = false;
         btn.textContent = 'Try Again';
       }
