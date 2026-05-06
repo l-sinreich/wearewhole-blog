@@ -14,23 +14,12 @@
  * restrictions don't apply to server-to-server requests).
  */
 
-const WORKFLOW_URL =
-  'https://api.github.com/repos/l-sinreich/wearewhole-blog/actions/workflows/deploy.yml/dispatches';
+const DEPLOY_HOOK_URL =
+  'https://api.cloudflare.com/client/v4/pages/webhooks/deploy_hooks/57892c34-26d2-44fe-923e-0932da06e61a';
 
-export async function onRequestPost(context) {
-  const token = context.env.GITHUB_TOKEN;
-
+export async function onRequestPost() {
   try {
-    const res = await fetch(WORKFLOW_URL, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Accept': 'application/vnd.github+json',
-        'Content-Type': 'application/json',
-        'User-Agent': 'wearewhole-blog-publisher',
-      },
-      body: JSON.stringify({ ref: 'main' }),
-    });
+    const res = await fetch(DEPLOY_HOOK_URL, { method: 'POST' });
 
     if (res.ok) {
       return new Response(JSON.stringify({ ok: true }), {
