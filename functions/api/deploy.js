@@ -17,19 +17,40 @@
 const DEPLOY_HOOK_URL =
   'https://api.cloudflare.com/client/v4/pages/webhooks/deploy_hooks/57892c34-26d2-44fe-923e-0932da06e61a';
 
-export async function onRequestPost() {
-  try {
-    const res = await fetch(DEPLOY_HOOK_URL, { method: 'POST' });
+const WORKFLOW_URL =
+  'https://api.github.com/repos/l-sinreich/wearewhole-blog/actions/workflows/deploy.yml/dispatches';
 
-    if (res.ok) {
+export async function onRequestPost(context) {
+  const token = context.env.GITHUB_TOKEN;
+
+  try {
+    // Fire both in parallel — Cloudflare hook updates wearewhole-blog.pages.dev,
+    // GitHub Actions updates wearewhole.co
+    const [hookRes, ghRes] = await Promise.all([
+      fetch(DEPLOY_HOOK_URL, { method: 'POST' }),
+      token
+        ? fetch(WORKFLOW_URL, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Accept': 'application/vnd.github+json',
+              'Content-Type': 'application/json',
+              'User-Agent': 'wearewhole-blog-publisher',
+            },
+            body: JSON.stringify({ ref: 'main' }),
+          })
+        : Promise.resolve({ ok: false, status: 0 }),
+    ]);
+
+    if (hookRes.ok) {
       return new Response(JSON.stringify({ ok: true }), {
         status: 200,
         headers: { 'Content-Type': 'application/json' },
       });
     }
 
-    const body = await res.text();
-    return new Response(JSON.stringify({ ok: false, status: res.status, body }), {
+    const body = await hookRes.text();
+    return new Response(JSON.stringify({ ok: false, status: hookRes.status, body }), {
       status: 502,
       headers: { 'Content-Type': 'application/json' },
     });
