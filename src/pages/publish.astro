@@ -6,9 +6,11 @@
 //
 // HOW IT WORKS:
 // The button submits a POST to /api/deploy — a Cloudflare Pages Function
-// (functions/api/deploy.js) that calls the Cloudflare deploy hook server-side.
+// (functions/api/deploy.js) that server-side fires both the Cloudflare deploy
+// hook (rebuilds the pages.dev preview) and the GitHub Actions workflow
+// (rebuilds production wearewhole.co, fetching fresh Notion content).
 // This avoids the CORS restriction that blocks direct browser fetches to
-// api.cloudflare.com.
+// api.cloudflare.com and the GitHub API.
 //
 // The <form> works without JavaScript (redirects on submit).
 // The inline script enhances it with in-page status feedback when JS is on.
