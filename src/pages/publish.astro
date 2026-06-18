@@ -6,10 +6,11 @@
 //
 // HOW IT WORKS:
 // The button submits a POST to /api/deploy — a Cloudflare Pages Function
-// (functions/api/deploy.js) that triggers the GitHub Actions deploy workflow
-// server-side (the pipeline that fetches fresh Notion content and deploys).
+// (functions/api/deploy.js) that server-side fires both the Cloudflare deploy
+// hook (rebuilds the pages.dev preview) and the GitHub Actions workflow
+// (rebuilds production wearewhole.co, fetching fresh Notion content).
 // This avoids the CORS restriction that blocks direct browser fetches to
-// the GitHub API.
+// api.cloudflare.com and the GitHub API.
 //
 // The <form> works without JavaScript (redirects on submit).
 // The inline script enhances it with in-page status feedback when JS is on.
@@ -134,11 +135,12 @@
           status.textContent = '✓ Deploy triggered! Your blog will update in ~30 seconds.';
           btn.textContent = 'Triggered';
         } else {
-          throw new Error('Server returned ' + res.status);
+          const data = await res.json().catch(() => ({}));
+          throw new Error('HTTP ' + res.status + ': ' + (data.body || data.error || JSON.stringify(data)));
         }
       } catch (err) {
         status.className = 'status error';
-        status.textContent = '✗ Something went wrong. Check the Cloudflare dashboard.';
+        status.textContent = '✗ ' + err.message;
         btn.disabled = false;
         btn.textContent = 'Try Again';
       }

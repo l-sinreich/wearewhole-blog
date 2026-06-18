@@ -632,7 +632,7 @@ img {
 }
 
 .post-body a {
-  color: var(--yellow);
+  color: #669FEA;
   text-decoration: underline;
   text-underline-offset: 3px;
 }
