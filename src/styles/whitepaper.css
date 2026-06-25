@@ -445,7 +445,6 @@ a:hover { color: var(--wp-blue-deep); }
 .wp-signals__intro {
   font-weight: 300;
   margin-bottom: 28px;
-  max-width: 60ch;
 }
 .wp-signals__list { list-style: none; }
 .wp-signal {
