@@ -99,12 +99,15 @@ const EMAIL = 'hello@wearewhole.co';
     {/* ── Signals feed ───────────────────────────────────────── */}
     <section id="signals" class="wp-section wp-section--signals">
       <aside class="wp-section__aside">
-        <h2 class="wp-section__title">Signals</h2>
+        <h2 class="wp-section__title">The Field As We're Reading It</h2>
         <Epigraph cite="Marshall McLuhan, 1960">
           What we must ask now is what totally new curricula and modes of organization are inherent in our new media?
         </Epigraph>
       </aside>
       <div class="wp-section__body">
+        <p class="wp-signals__intro">
+          We maintain this as an active log curating signals from practitioners, researchers, and rulings that are shaping how this dynamic is navigated and shaped.
+        </p>
         <SignalsFeed signals={signals} />
         <p class="wp-cta wp-cta--inline">
           <a href={`mailto:${EMAIL}?subject=${encodeURIComponent('Signal for the white paper')}`}>

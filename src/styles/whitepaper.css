@@ -442,6 +442,11 @@ a:hover { color: var(--wp-blue-deep); }
 }
 .wp-signals__scroll::-webkit-scrollbar { width: 6px; }
 .wp-signals__scroll::-webkit-scrollbar-thumb { background: var(--wp-faint); border-radius: 3px; }
+.wp-signals__intro {
+  font-weight: 300;
+  margin-bottom: 28px;
+  max-width: 60ch;
+}
 .wp-signals__list { list-style: none; }
 .wp-signal {
   display: grid;
