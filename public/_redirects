@@ -1,0 +1,4 @@
+# Old white-paper URLs → field brief (the page was briefly live at /whitepaper)
+/whitepaper           /field-brief           301
+/whitepaper/changelog /field-brief/changelog 301
+/whitepaper/*         /field-brief/:splat     301

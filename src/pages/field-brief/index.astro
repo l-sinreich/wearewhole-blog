@@ -1,0 +1,138 @@
+---
+/**
+ * src/pages/whitepaper/index.astro → /whitepaper/
+ *
+ * The living white paper itself. Assembles the MDX sections (from the
+ * `whitepaper` content collection) in order, injects the Notion-sourced
+ * Signals feed before the closer, and wires the left dot tracker + CTAs.
+ *
+ * Content lives in src/content/whitepaper/*.mdx (version-controlled). Signals
+ * live in Notion (getAllSignals). This page is just the assembly + chrome.
+ */
+import { getCollection, render } from 'astro:content';
+import WhitePaperLayout from '../../layouts/WhitePaperLayout.astro';
+import DotNav from '../../components/DotNav.astro';
+import SectionHistory from '../../components/SectionHistory.astro';
+import Epigraph from '../../components/Epigraph.astro';
+import SignalsFeed from '../../components/SignalsFeed.astro';
+import { getAllSignals } from '../../lib/notion';
+
+// --- Content -------------------------------------------------------------
+const all = (await getCollection('whitepaper')).sort(
+  (a, b) => a.data.order - b.data.order
+);
+
+const header = all.find((e) => e.data.kind === 'header');
+const closer = all.find((e) => e.data.kind === 'closer');
+const bodyEntries = all.filter(
+  (e) => e.data.kind === 'section' || e.data.kind === 'inquiry'
+);
+
+// Pre-render each MDX entry's <Content /> (components are imported in the MDX).
+const rendered = await Promise.all(
+  [...bodyEntries, ...(closer ? [closer] : [])].map(async (entry) => ({
+    entry,
+    Content: (await render(entry)).Content,
+  }))
+);
+const renderedById = new Map(rendered.map((r) => [r.entry.id, r.Content]));
+
+// --- Signals -------------------------------------------------------------
+const signals = await getAllSignals();
+
+// --- Left dot tracker ----------------------------------------------------
+const dotItems = [
+  ...bodyEntries
+    .filter((e) => e.data.dotLabel)
+    .map((e) => ({ id: e.id, label: e.data.dotLabel! })),
+  { id: 'signals', label: 'Signals' },
+];
+
+const EMAIL = 'hello@wearewhole.co';
+---
+<WhitePaperLayout title={header?.data.title ?? 'White Paper'}>
+  <DotNav items={dotItems} />
+
+  <article class="wp">
+    {/* ── Title block ─────────────────────────────────────────── */}
+    {header && (
+      <header class="wp-header">
+        <div class="wp-header__eyebrow">
+          <span>{header.data.eyebrow}</span>
+        </div>
+        <h1 class="wp-header__title" set:html={header.data.titleHtml ?? header.data.title} />
+        {header.data.dek && <p class="wp-header__dek">{header.data.dek}</p>}
+      </header>
+    )}
+
+    {/* ── Body sections + inquiries ──────────────────────────── */}
+    {bodyEntries.map((entry) => {
+      const Content = renderedById.get(entry.id);
+      const isInquiry = entry.data.kind === 'inquiry';
+      return (
+        <section id={entry.id} class={isInquiry ? 'wp-section wp-section--inquiry' : 'wp-section'}>
+          <aside class="wp-section__aside">
+            <h2 class="wp-section__title">
+              {isInquiry && entry.data.inquiryNumber != null && (
+                <span class="wp-section__num">{entry.data.inquiryNumber}.</span>
+              )}
+              {entry.data.title}
+            </h2>
+            {entry.data.version && (
+              <SectionHistory
+                version={entry.data.version}
+                versionDate={entry.data.versionDate ?? ''}
+                changelog={entry.data.changelog}
+              />
+            )}
+            {entry.data.epigraph && (
+              <Epigraph cite={entry.data.epigraphCite ?? ''}>{entry.data.epigraph}</Epigraph>
+            )}
+          </aside>
+          <div class="wp-section__body">
+            <div class="wp-prose">{Content && <Content />}</div>
+          </div>
+        </section>
+      );
+    })}
+
+    {/* ── Signals feed ───────────────────────────────────────── */}
+    <section id="signals" class="wp-section wp-section--signals">
+      <aside class="wp-section__aside">
+        <h2 class="wp-section__title">The Field As We're Reading It</h2>
+        <Epigraph cite="Marshall McLuhan, 1960">
+          What we must ask now is what totally new curricula and modes of organization are inherent in our new media?
+        </Epigraph>
+      </aside>
+      <div class="wp-section__body">
+        <p class="wp-signals__intro">
+          We maintain this as an active log curating signals from practitioners, researchers, and rulings that are shaping how this dynamic is navigated and shaped.
+        </p>
+        <SignalsFeed signals={signals} />
+        <p class="wp-cta wp-cta--inline">
+          <a href={`mailto:${EMAIL}?subject=${encodeURIComponent('Signal for the field brief')}`}>
+            Seen a signal? Share it with us →
+          </a>
+        </p>
+      </div>
+    </section>
+
+    {/* ── Closer (full-width prose, no section title) ────────── */}
+    {closer && (
+      <section class="wp-closer">
+        <div class="wp-prose wp-prose--closer">
+          {(() => {
+            const Content = renderedById.get(closer.id);
+            return Content ? <Content /> : null;
+          })()}
+        </div>
+        <div class="wp-ctas">
+          <a class="wp-cta" href={`mailto:${EMAIL}`}>Reach out →</a>
+        </div>
+        <p class="wp-changelog-link">
+          <a href="/field-brief/changelog">View full changelog →</a>
+        </p>
+      </section>
+    )}
+  </article>
+</WhitePaperLayout>
