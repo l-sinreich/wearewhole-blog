@@ -1,0 +1,574 @@
+/*
+ * src/styles/whitepaper.css
+ *
+ * The living white paper's own visual world: light, quiet, editorial —
+ * deliberately distinct from the dark marketing site and blog. Loaded only by
+ * WhitePaperLayout, so it never collides with global.css.
+ *
+ * Type: Archivo (shared with the rest of the site). Color: warm light-gray
+ * ground, charcoal ink, a muted slate-blue for headings/links/figures, and the
+ * site's near-black (#1a2527) reused for the dark pills.
+ */
+
+/* ============================================================
+   TOKENS
+   ============================================================ */
+:root {
+  --wp-bg:        #e9e9e9;  /* page ground */
+  --wp-ink:       #414141;  /* body text */
+  --wp-blue:      #0158b5;  /* headings, links, stat figures */
+  --wp-blue-deep: #01468f;  /* hover / emphasis */
+  --wp-accent:    #605b03;  /* olive accent: pills, scenario border, diagnostic, watching arrows, dividers */
+  --wp-muted:     #6f6f6f;  /* secondary text, metadata */
+  --wp-faint:     #9a9a9a;  /* faintest labels */
+  --wp-rule:      #cfcfcf;  /* fine separators (signal/changelog/history rows) */
+  --wp-pill-bg:   var(--wp-accent);  /* pills use the olive accent */
+  --wp-pill-ink:  #e9e9e9;  /* text on olive pills */
+  --wp-mono:      'SFMono-Regular', ui-monospace, 'Menlo', 'Consolas', monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+.wp-body {
+  font-family: 'Archivo', sans-serif;
+  font-weight: 300;
+  color: var(--wp-ink);
+  background: var(--wp-bg);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--wp-blue); text-decoration: none; transition: color 0.18s ease; }
+a:hover { color: var(--wp-blue-deep); }
+
+/* ============================================================
+   TOP NAV + FOOTER
+   ============================================================ */
+.wp-topnav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 48px;
+  max-width: 1180px;
+  margin: 0 auto;
+}
+.wp-topnav__logo img { height: 34px; width: auto; }
+.wp-topnav__back {
+  font-family: 'Archivo Narrow', sans-serif;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--wp-muted);
+}
+.wp-topnav__back:hover { color: var(--wp-blue); }
+
+.wp-footer {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 48px;
+  border-top: 1px solid var(--wp-rule);
+  margin-top: 80px;
+  color: var(--wp-muted);
+  font-size: 0.85rem;
+}
+
+/* ============================================================
+   PAGE FRAME
+   ============================================================ */
+.wp {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 24px 48px 40px;
+}
+
+/* Two columns: a left aside (section title, version pill, diagnostic prompt)
+   and the main body column. Top-aligned. */
+.wp-section {
+  display: grid;
+  grid-template-columns: 270px 1fr;
+  gap: 52px;
+  align-items: start;
+  padding: 52px 0;
+  border-top: 1px solid var(--wp-accent);
+}
+.wp-section:first-of-type { border-top: none; }
+
+.wp-section__title {
+  font-family: 'Archivo Narrow', sans-serif;
+  font-weight: 700;
+  font-size: 1.6rem;
+  line-height: 1.15;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  color: var(--wp-blue);
+  margin: 0;
+}
+.wp-section--inquiry .wp-section__title {
+  font-size: 1.35rem;
+  text-transform: none;
+  letter-spacing: 0;
+}
+.wp-section__num {
+  display: block;
+  font-size: 1.7rem;
+  margin-bottom: 4px;
+}
+
+/* Inquiry sections: the divider spans only the body column (the width of the
+   body copy), not the full grid. Children get the top padding so the header
+   still lines up with the body's first line. */
+.wp-section--inquiry {
+  border-top: none;
+  padding-top: 0;
+}
+.wp-section--inquiry .wp-section__aside,
+.wp-section--inquiry .wp-section__body {
+  padding-top: 52px;
+}
+.wp-section--inquiry .wp-section__body {
+  border-top: 1px solid var(--wp-accent);
+}
+
+/* ============================================================
+   HEADER / TITLE BLOCK
+   ============================================================ */
+.wp-header {
+  padding: 32px 0 48px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--wp-accent);
+}
+.wp-header__eyebrow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-family: 'Archivo Narrow', sans-serif;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--wp-muted);
+  padding-bottom: 28px;
+}
+.wp-header__ver { color: var(--wp-faint); white-space: nowrap; }
+.wp-header__title {
+  font-family: 'Archivo Narrow', sans-serif;
+  font-weight: 700;
+  font-size: clamp(2rem, 4.6vw, 3rem);
+  line-height: 1.06;
+  text-transform: uppercase;
+  letter-spacing: 0;
+  color: var(--wp-blue);
+}
+.wp-header__dek {
+  font-size: 1.1rem;
+  color: var(--wp-ink);
+  margin-top: 22px;
+  font-weight: 300;
+}
+.wp-header__pill {
+  display: inline-block;
+  margin-top: 28px;
+  background: var(--wp-pill-bg);
+  color: var(--wp-pill-ink);
+  font-family: 'Archivo Narrow', sans-serif;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 7px 14px;
+  border-radius: 3px;
+}
+.wp-header__updated { opacity: 0.7; }
+
+/* ============================================================
+   PROSE
+   ============================================================ */
+.wp-prose > p { margin-bottom: 1.15em; font-weight: 300; }
+.wp-prose > p:last-child { margin-bottom: 0; }
+.wp-prose strong { font-weight: 700; color: var(--wp-ink); }
+.wp-prose em { font-style: italic; }
+.wp-prose a { text-decoration: underline; text-underline-offset: 2px; }
+
+/* Closer: full-width, more generous landing weight on the last paragraph. */
+.wp-closer { padding: 64px 0 8px; border-top: 1px solid var(--wp-accent); }
+.wp-prose--closer { max-width: 760px; }
+.wp-prose--closer > p { font-size: 1rem; }
+
+/* ============================================================
+   STATS ROW (The Moment)
+   ============================================================ */
+.wp-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 36px;
+  margin: 36px 0 8px;
+}
+.wp-stat { flex: 1 1 120px; min-width: 120px; }
+/* Short vertical dividing line between stats. */
+.wp-stat + .wp-stat {
+  border-left: 1px solid var(--wp-accent);
+  padding-left: 36px;
+}
+.wp-stat__figure {
+  font-family: 'Archivo', sans-serif;
+  font-weight: 300;
+  font-size: clamp(1.9rem, 3.7vw, 2.8rem);
+  line-height: 1;
+  color: var(--wp-blue);
+}
+.wp-stat__caption {
+  font-size: 0.82rem;
+  color: var(--wp-muted);
+  margin-top: 10px;
+  line-height: 1.45;
+  font-weight: 300;
+}
+.wp-stat__sup {
+  font-size: 0.62rem;
+  line-height: 0;
+  margin-left: 1px;
+}
+.wp-stat__sup a { color: var(--wp-blue); text-decoration: none; }
+.wp-stat__sup a:hover { text-decoration: underline; }
+
+/* ============================================================
+   SCENARIO BLOCKS (subtle left border, no card)
+   ============================================================ */
+.wp-scenario {
+  border-left: 2px solid var(--wp-accent);
+  padding-left: 22px;
+  margin: 22px 0;
+}
+.wp-scenario__label {
+  font-family: 'Archivo Narrow', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--wp-muted);
+  margin-bottom: 6px;
+}
+.wp-scenario__body p { font-weight: 300; font-size: 1rem; color: var(--wp-ink); }
+
+/* ============================================================
+   DIAGNOSTIC PULL-QUOTE
+   ============================================================ */
+/* Diagnostic prompt. Authored in the body flow right before "Where the gap
+   shows up"; on desktop it's pulled into the left column and sits beside that
+   sub-label. On mobile (see media query) it stays in flow, just before it. */
+.wp-diagnostic {
+  margin: 24px 0;
+  font-style: italic;
+  font-weight: 300;
+  font-size: 1.05rem;
+  line-height: 1.5;
+  color: var(--wp-accent);
+}
+.wp-section--inquiry .wp-prose .wp-diagnostic {
+  float: left;
+  clear: left;
+  width: 270px;
+  margin: 0 0 0 -322px; /* aside width (270) + column gap (52) */
+}
+
+/* Epigraph — attributed quotation in the accent voice (italic, olive). */
+.wp-epigraph {
+  margin: 16px 0 28px;
+}
+.wp-epigraph blockquote {
+  font-style: italic;
+  font-weight: 300;
+  font-size: 1.1rem;
+  line-height: 1.5;
+  color: var(--wp-accent);
+}
+.wp-epigraph figcaption {
+  margin-top: 12px;
+  font-family: 'Archivo Narrow', sans-serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  color: var(--wp-muted);
+}
+
+/* ============================================================
+   "WHAT WE'RE WATCHING"
+   ============================================================ */
+.wp-watching { margin: 8px 0; }
+
+/* Shared sub-heading for "Where the gap shows up" and "What we're watching"
+   so the two read as peers. Scoped under .wp-prose to win over `.wp-prose > p`
+   (the gap label is authored as a direct child of the prose flow). */
+.wp-sublabel,
+.wp-prose .wp-sublabel {
+  font-family: 'Archivo Narrow', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--wp-muted);
+  margin: 34px 0 16px;
+}
+.wp-watching ul { list-style: none; }
+.wp-watching li {
+  position: relative;
+  padding-left: 24px;
+  margin-bottom: 12px;
+  color: var(--wp-ink);
+  font-size: 1rem;
+  font-weight: 300;
+  line-height: 1.65;
+}
+.wp-watching li::before {
+  content: '→';
+  position: absolute;
+  left: 0;
+  color: var(--wp-accent);
+}
+
+/* ============================================================
+   SECTION HISTORY (version pill + changelog toggle)
+   ============================================================ */
+.wp-history { margin-top: 18px; }
+.wp-history__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--wp-pill-bg);
+  color: var(--wp-pill-ink);
+  font-family: 'Archivo Narrow', sans-serif;
+  font-weight: 400;
+  font-size: 0.6rem;
+  letter-spacing: 0.03em;
+  padding: 1px 8px;
+  border-radius: 2px;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+.wp-history__pill--static { cursor: default; margin-top: 18px; }
+.wp-history__pill::-webkit-details-marker { display: none; }
+.wp-history__caret { transition: transform 0.2s ease; font-size: 0.85em; }
+.wp-history[open] .wp-history__caret { transform: rotate(180deg); }
+
+.wp-history__list {
+  list-style: none;
+  margin-top: 14px;
+  padding-left: 2px;
+  border-left: 2px solid var(--wp-rule);
+}
+.wp-history__item {
+  display: grid;
+  grid-template-columns: auto auto auto 1fr;
+  gap: 10px;
+  align-items: baseline;
+  padding: 6px 0 6px 16px;
+  font-size: 0.8rem;
+  color: var(--wp-muted);
+}
+.wp-history__ver { font-weight: 700; color: var(--wp-ink); }
+.wp-history__date { color: var(--wp-faint); white-space: nowrap; }
+.wp-history__type {
+  font-family: 'Archivo Narrow', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.66rem;
+  color: var(--wp-blue);
+}
+.wp-history__note { font-weight: 300; }
+
+/* ============================================================
+   LEFT DOT TRACKER (scroll-spy)
+   ============================================================ */
+.wp-dotnav {
+  position: fixed;
+  right: 28px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 20;
+}
+.wp-dotnav ul { list-style: none; display: flex; flex-direction: column; align-items: flex-end; gap: 16px; }
+.wp-dotnav__dot {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+}
+.wp-dotnav__dot::before {
+  content: '';
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  border: 1.5px solid var(--wp-faint);
+  background: transparent;
+  transition: all 0.2s ease;
+  flex: none;
+}
+.wp-dotnav__dot.is-active::before {
+  background: var(--wp-blue);
+  border-color: var(--wp-blue);
+  transform: scale(1.15);
+}
+.wp-dotnav__label {
+  font-family: 'Archivo Narrow', sans-serif;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--wp-muted);
+  opacity: 0;
+  transform: translateX(4px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  pointer-events: none;
+  white-space: nowrap;
+}
+.wp-dotnav__dot:hover .wp-dotnav__label,
+.wp-dotnav__dot.is-active .wp-dotnav__label {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* ============================================================
+   SIGNALS FEED
+   ============================================================ */
+.wp-section--signals .wp-section__title h2 { color: var(--wp-blue); }
+.wp-signals__scroll {
+  max-height: 460px;
+  overflow-y: auto;
+  padding-right: 18px;
+  /* right-aligned vertical scroller */
+  scrollbar-width: thin;
+  scrollbar-color: var(--wp-faint) transparent;
+}
+.wp-signals__scroll::-webkit-scrollbar { width: 6px; }
+.wp-signals__scroll::-webkit-scrollbar-thumb { background: var(--wp-faint); border-radius: 3px; }
+.wp-signals__list { list-style: none; }
+.wp-signal {
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  gap: 18px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--wp-rule);
+}
+.wp-signal:first-child { padding-top: 0; }
+.wp-signal__date {
+  font-family: 'Archivo Narrow', sans-serif;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--wp-muted);
+}
+.wp-signal__text { font-size: 0.95rem; font-weight: 300; line-height: 1.5; }
+.wp-signal__src {
+  margin-top: 8px;
+  font-size: 0.82rem;
+}
+.wp-signal__src a { text-decoration: underline; text-underline-offset: 2px; }
+.wp-signal__attr { color: var(--wp-muted); }
+.wp-signals__empty { color: var(--wp-muted); font-style: italic; }
+
+/* ============================================================
+   CTAs (open doors, not buttons)
+   ============================================================ */
+.wp-ctas {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 52px 0 8px;
+}
+.wp-cta {
+  font-size: 1.05rem;
+  color: var(--wp-blue);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-thickness: 1px;
+}
+.wp-cta--inline { margin-top: 22px; font-size: 0.95rem; }
+.wp-changelog-link {
+  margin: 36px 0 0;
+  font-size: 0.8rem;
+}
+.wp-changelog-link a {
+  font-family: 'Archivo Narrow', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--wp-muted);
+}
+.wp-changelog-link a:hover { color: var(--wp-blue); }
+
+/* ============================================================
+   CHANGELOG PAGE (terminal log)
+   ============================================================ */
+.wp-log { max-width: 920px; margin: 0 auto; padding: 24px 48px 60px; }
+.wp-log__back {
+  font-family: 'Archivo Narrow', sans-serif;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--wp-muted);
+}
+.wp-log__head h1 {
+  font-family: 'Archivo Narrow', sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--wp-blue);
+  font-size: 2.2rem;
+  margin: 18px 0 12px;
+}
+.wp-log__sub { color: var(--wp-muted); font-weight: 300; max-width: 60ch; margin-bottom: 32px; }
+.wp-log__list { list-style: none; border-top: 1px solid var(--wp-rule); }
+.wp-log__row {
+  display: grid;
+  grid-template-columns: 110px 92px 56px 1fr;
+  gap: 16px;
+  align-items: baseline;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--wp-rule);
+  font-family: var(--wp-mono);
+  font-size: 0.8rem;
+}
+.wp-log__date { color: var(--wp-muted); }
+.wp-log__type {
+  text-transform: uppercase;
+  font-size: 0.66rem;
+  letter-spacing: 0.06em;
+  color: var(--wp-blue);
+}
+.wp-log__type--published { color: #4a7a52; }
+.wp-log__type--revised   { color: var(--wp-blue); }
+.wp-log__type--added     { color: #6a5a8a; }
+.wp-log__type--corrected { color: #a06030; }
+.wp-log__type--retired   { color: var(--wp-faint); }
+.wp-log__ver { color: var(--wp-faint); }
+.wp-log__section { color: var(--wp-ink); }
+.wp-log__note { color: var(--wp-muted); font-family: 'Archivo', sans-serif; }
+.wp-log__row .wp-log__note { grid-column: 1 / -1; padding-left: 0; }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 880px) {
+  .wp-dotnav { display: none; }
+  .wp-section { grid-template-columns: 1fr; gap: 18px; padding: 40px 0; }
+  .wp { padding: 16px 24px 32px; }
+  .wp-topnav, .wp-footer { padding: 20px 24px; }
+  .wp-log { padding: 16px 24px 48px; }
+  .wp-log__row { grid-template-columns: 90px 1fr; }
+  .wp-log__ver, .wp-log__section { grid-column: 2; }
+
+  /* Title wraps naturally — drop the hard line breaks. */
+  .wp-header__title br { display: none; }
+
+  /* Inquiry sections: single column, normal padding; the divider naturally
+     spans the (now full-width) body. */
+  .wp-section--inquiry { padding-top: 40px; }
+  .wp-section--inquiry .wp-section__aside { padding-top: 0; }
+  .wp-section--inquiry .wp-section__body { padding-top: 18px; border-top: none; }
+
+  /* Diagnostic returns to normal flow, just before "Where the gap shows up". */
+  .wp-section--inquiry .wp-prose .wp-diagnostic {
+    float: none;
+    width: auto;
+    margin: 24px 0;
+  }
+}

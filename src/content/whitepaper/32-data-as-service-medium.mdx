@@ -1,0 +1,42 @@
+---
+kind: inquiry
+order: 32
+inquiryNumber: 2
+title: "Data as the Service Medium: Why the Modern Service Strategy Is Dictated by the Interplay of Backstage Logic and Frontend Touchpoints"
+version: "1.0"
+versionDate: "2026-06-01"
+changelog:
+  - version: "1.0"
+    date: "2026-06-01"
+    type: published
+    note: "First published."
+---
+import Scenario from '../../components/Scenario.astro';
+import Watching from '../../components/Watching.astro';
+import SubLabel from '../../components/SubLabel.astro';
+import Diagnostic from '../../components/Diagnostic.astro';
+
+Data, once tucked away as a byproduct of enterprise software for technical teams, is now the primary medium through which services are constituted. The service is what the underlying systems do with information before, during, and after to create those touchpoints.
+
+Data needs to be two things at once: a product, with ownership, accountability, and defined quality; and as dynamic service, orchestrated to reach the people and decisions that need it. Architectures like data mesh address the product layer at the technical level, and they leave the service layer completely blind.
+
+The design conversation has stayed at surface UX. But in a digitized world, the service experience is constituted *through* backend information flows: eligibility is calculated by algorithms, queues are prioritized by data logic, and feedback loops are run automatically. Designing data structures is no longer backstage IT, it is an upstream, front-stage design capability that builds or erodes trust. A data model has become a strategic medium for what things mean, executed by systems.
+
+<Diagnostic>
+If a customer or member asked why an automated decision affected them, could anyone in your organization trace the answer end to end?
+</Diagnostic>
+
+<SubLabel>Where the gap shows up</SubLabel>
+
+<Scenario label="Public programs">
+A workforce program's participant experience is constituted almost entirely by backstage data: eligibility determined by income verification across three agencies, services triggered by enrollment status, outcomes tracked in a state system that doesn't talk to the program's CRM. When a participant falls out of the program, no one can say where or why, because the journey exists in fragments across systems no one owns end to end.
+</Scenario>
+
+<Scenario label="Financial services">
+When a financial services company deploys an unmapped machine-learning model to evaluate credit risk, the system can quietly execute proxy discrimination or downrank profiles using invisible metadata layers. Because the data model was built without oversight, the executive team remains entirely unaware of their systemic exposure until regulatory or reputational harm hits scale.
+</Scenario>
+
+<Watching>
+- Legal rulings that treat automated AI outputs as a corporation's own legally binding speech, and the responding accountability structures pulling data architecture into corporate governance.
+- The shift from cosmetic UX or traditional journey mapping toward constructing data contexts and operational design directly within their architectures—making background data interpretation visible, ownable, and contestable before code is written.
+</Watching>

@@ -1,0 +1,20 @@
+---
+/**
+ * Epigraph.astro
+ *
+ * A short attributed quotation set in the accent treatment (italic, olive) —
+ * the same voice as the diagnostic prompts. Used for the McLuhan epigraph in
+ * the Signals aside and the "Figure It Out" epigraph atop Building New Paths.
+ *
+ * Usage:
+ *   <Epigraph cite="Marshall McLuhan, 1960">What we must ask now…</Epigraph>
+ */
+interface Props {
+  cite: string;
+}
+const { cite } = Astro.props;
+---
+<figure class="wp-epigraph">
+  <blockquote><slot /></blockquote>
+  <figcaption>— {cite}</figcaption>
+</figure>

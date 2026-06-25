@@ -19,6 +19,9 @@ jobs:
         env:
           NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
           NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
+          # White paper Signals feed. Add this secret in GitHub repo settings;
+          # if absent, the build still succeeds and the feed renders empty.
+          NOTION_SIGNALS_DATABASE_ID: ${{ secrets.NOTION_SIGNALS_DATABASE_ID }}
       - uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}

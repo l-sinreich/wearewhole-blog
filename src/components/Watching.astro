@@ -1,0 +1,28 @@
+---
+/**
+ * Watching.astro
+ *
+ * The "What we're watching" block under a line of inquiry: a small header on
+ * the same weight as the scenario labels, followed by an arrow list in
+ * slightly muted type — signalling "ongoing, not concluded."
+ *
+ * The list itself is authored as a normal Markdown list inside the slot; the
+ * arrow markers are applied via CSS (.wp-watching li). `title` defaults to
+ * "What we're watching" but can be overridden (the source doc also uses
+ * "Signals we're tracking").
+ *
+ * Usage in MDX:
+ *   <Watching>
+ *   - How sensemaking distributes through AI-disrupted processes…
+ *   - AI copilots deployed over fragmented databases…
+ *   </Watching>
+ */
+interface Props {
+  title?: string;
+}
+const { title = "What we're watching" } = Astro.props;
+---
+<div class="wp-watching">
+  <p class="wp-sublabel">{title}</p>
+  <slot />
+</div>

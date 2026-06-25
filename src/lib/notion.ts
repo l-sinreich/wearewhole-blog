@@ -225,3 +225,72 @@ export async function getAllPosts(): Promise<Post[]> {
 
   return posts;
 }
+
+// ---------------------------------------------------------------------------
+// Signals (white paper "Signals" feed)
+// ---------------------------------------------------------------------------
+
+/**
+ * A Signal is one field-note in the white paper's Signals feed: something
+ * Lauren has seen in the world that bears on the inquiries. Unlike the white
+ * paper prose (which lives in version-controlled MDX), signals change often
+ * and stay in Notion — added via a quick row + the publish button.
+ *
+ * Notion source: the "Whitepaper Signals Feed" database. Properties used:
+ *   Date (date)        → date
+ *   Signal (text)      → signal   (the one-sentence description, in Lauren's voice)
+ *   Source (text)      → source   (the publication / source name to display)
+ *   URL (url)          → url      (link the source points to)
+ *   Attribution (text) → attribution (author / who said it)
+ *   Published (checkbox, optional) → drafts hidden when present and unchecked
+ */
+export interface Signal {
+  id: string;
+  date: string;        // ISO date string
+  signal: string;      // the one-sentence description
+  source: string;      // source name to display
+  url: string | null;  // link for the source
+  attribution: string; // author / attribution
+}
+
+/**
+ * getAllSignals queries the Signals Notion database and returns published
+ * signals newest-first. Mirrors getAllPosts(): same client, same defensive
+ * property access, build-time only.
+ *
+ * Uses its own database ID env var so signals and blog posts stay independent.
+ */
+export async function getAllSignals(): Promise<Signal[]> {
+  const databaseId = import.meta.env.NOTION_SIGNALS_DATABASE_ID;
+
+  // If the signals DB isn't configured (e.g. local dev without the env var),
+  // return an empty feed rather than failing the whole build.
+  if (!databaseId) {
+    console.warn('[notion] NOTION_SIGNALS_DATABASE_ID not set — Signals feed will be empty.');
+    return [];
+  }
+
+  const response = await notion.databases.query({
+    database_id: databaseId,
+    sorts: [{ property: 'Date', direction: 'descending' }],
+  });
+
+  return response.results.map((page: any) => {
+    const props = page.properties;
+
+    // The Published checkbox is optional on this DB. If it exists and is
+    // unchecked, treat the row as a draft; if the property is absent, publish.
+    return {
+      id: page.id,
+      date: props.Date?.date?.start ?? '',
+      signal: props.Signal?.rich_text?.map((t: any) => t.plain_text).join('') ?? '',
+      source: props.Source?.rich_text?.map((t: any) => t.plain_text).join('') ?? '',
+      url: props.URL?.url ?? null,
+      attribution: props.Attribution?.rich_text?.map((t: any) => t.plain_text).join('') ?? '',
+      _published: props.Published ? props.Published.checkbox === true : true,
+    };
+  })
+  // Drop unpublished rows, then strip the internal _published flag.
+  .filter((s: any) => s._published)
+  .map(({ _published, ...s }: any) => s satisfies Signal);
+}

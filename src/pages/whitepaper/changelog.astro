@@ -1,0 +1,64 @@
+---
+/**
+ * src/pages/whitepaper/changelog.astro → /whitepaper/changelog
+ *
+ * The full provenance log. Reads every changelog entry across all white paper
+ * MDX sections, flattens them, and renders them reverse-chronologically as a
+ * spare, monospaced terminal log: date flush left, section name, type badge,
+ * one-line note. For readers who want the full history, not casual browsing.
+ */
+import { getCollection } from 'astro:content';
+import WhitePaperLayout from '../../layouts/WhitePaperLayout.astro';
+import { isoDate } from '../../lib/format';
+
+const sections = await getCollection('whitepaper');
+
+// Flatten: one row per changelog entry, tagged with its section title.
+type Row = {
+  date: string;
+  section: string;
+  type: string;
+  note: string;
+  version: string;
+};
+const rows: Row[] = sections
+  .flatMap((s) =>
+    s.data.changelog.map((c) => ({
+      date: c.date,
+      section: s.data.title,
+      type: c.type,
+      note: c.note,
+      version: c.version,
+    }))
+  )
+  .sort((a, b) => b.date.localeCompare(a.date));
+---
+<WhitePaperLayout title="White Paper — Changelog">
+  <div class="wp-log">
+    <header class="wp-log__head">
+      <a href="/whitepaper" class="wp-log__back">← back to the white paper</a>
+      <h1>Changelog</h1>
+      <p class="wp-log__sub">
+        Every revision to this living document, newest first. The white paper's
+        prose lives in version control, so each line here corresponds to a real,
+        dated change.
+      </p>
+    </header>
+
+    {rows.length === 0 ? (
+      <p class="wp-log__empty">No entries yet.</p>
+    ) : (
+      <ol class="wp-log__list">
+        {rows.map((r) => (
+          <li class="wp-log__row">
+            <span class="wp-log__date">{isoDate(r.date)}</span>
+            <span class={`wp-log__type wp-log__type--${r.type}`}>{r.type}</span>
+            <span class="wp-log__ver">v{r.version}</span>
+            <span class="wp-log__section">{r.section}</span>
+            <span class="wp-log__note">{r.note}</span>
+          </li>
+        ))}
+      </ol>
+    )}
+  </div>
+</WhitePaperLayout>

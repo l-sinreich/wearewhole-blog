@@ -1,0 +1,56 @@
+---
+/**
+ * SectionHistory.astro
+ *
+ * The small "version + history" affordance below a section's content.
+ *
+ * - Always shows a version pill: "v1.0 · JUN 2026".
+ * - If the section has MORE THAN ONE changelog entry, the pill becomes a
+ *   toggle (native <details>) that expands to a dated list of changes in
+ *   muted small type. Collapsed by default.
+ * - If the changelog is empty or has only the single publish entry, no toggle
+ *   is rendered — just the static pill (per the agreed rule).
+ *
+ * Reads straight from the section's MDX frontmatter (version, versionDate,
+ * changelog) — the same data that feeds /whitepaper/changelog.
+ */
+import { monthYearUpper, monthYear } from '../lib/format';
+
+interface ChangelogEntry {
+  version: string;
+  date: string;
+  type: 'published' | 'revised' | 'added' | 'corrected' | 'retired';
+  note: string;
+}
+interface Props {
+  version: string;
+  versionDate: string;
+  changelog?: ChangelogEntry[];
+}
+const { version, versionDate, changelog = [] } = Astro.props;
+
+// Newest first, so the most recent revision sits at the top of the expanded list.
+const entries = [...changelog].sort((a, b) => b.date.localeCompare(a.date));
+const hasHistory = entries.length > 1;
+const pillLabel = `v${version} · ${monthYearUpper(versionDate)}`;
+---
+{hasHistory ? (
+  <details class="wp-history">
+    <summary class="wp-history__pill">
+      <span>{pillLabel}</span>
+      <span class="wp-history__caret" aria-hidden="true">↓</span>
+    </summary>
+    <ul class="wp-history__list">
+      {entries.map((e) => (
+        <li class="wp-history__item">
+          <span class="wp-history__ver">v{e.version}</span>
+          <span class="wp-history__date">{monthYear(e.date)}</span>
+          <span class={`wp-history__type wp-history__type--${e.type}`}>{e.type}</span>
+          <span class="wp-history__note">{e.note}</span>
+        </li>
+      ))}
+    </ul>
+  </details>
+) : (
+  <p class="wp-history__pill wp-history__pill--static">{pillLabel}</p>
+)}

@@ -1,0 +1,40 @@
+---
+kind: inquiry
+order: 34
+inquiryNumber: 4
+title: "Contextual Architecture: building the environments where people and machines make sense together"
+version: "1.0"
+versionDate: "2026-06-01"
+changelog:
+  - version: "1.0"
+    date: "2026-06-01"
+    type: published
+    note: "First published."
+---
+import Scenario from '../../components/Scenario.astro';
+import Watching from '../../components/Watching.astro';
+import SubLabel from '../../components/SubLabel.astro';
+import Diagnostic from '../../components/Diagnostic.astro';
+
+Traditional organizational development treats the company as a predictable machine, installing habits through training pipelines and compliance manuals. This approach breaks down in a post-generative environment where teams are building the plane as they fly it, and where software composes interfaces, routes resources, and makes background choices no human can supervise transaction-by-transaction.
+
+The shift is from installing habits to designing the contexts that cultivate the social, physical, and technical practices where learning and sensemaking happen in the daily flow of work, and codifying design intentions and boundaries into parameters both people and machines can reliably act within.
+
+<Diagnostic>
+When a decision goes wrong, do you have a practice for tracing why, or is the lesson only transferable as long as the people are there to tell it?
+</Diagnostic>
+
+<SubLabel>Where the gap shows up</SubLabel>
+
+<Scenario label="Cross-team operations">
+A multinational operations team tracks customer activity data across an automated service flow. The machine flags an isolated 400% anomaly spike in product cancellations and automatically freezes account pipelines, treating it as a technical system glitch. A cross-functional analysis reveals the number was an accurate behavioral signal reflecting an unmapped external sequence: a key partner platform had updated its operational API, changing user workflows. The data point was structurally pristine, but its commercial meaning was invisible until a human mapped the relationship between the two systems.
+</Scenario>
+
+<Scenario label="Innovation programs">
+A fund stands up a measurement & evaluation function to "build a learning culture." It operates as a compliance layer — rubrics, dashboards, annual reports — while the actual learning happens in hallway conversations between program officers that never get captured. The M&E infrastructure is technically sound and organizationally inert.
+</Scenario>
+
+<Watching>
+- Simple social rituals doing what taxonomies can't, e.g. a "30-day decision autopsy" where teams trace a decision that went wrong, surface the unstated assumptions, and co-design heuristics for next time.
+- The quiet collapse of off-the-side-of-the-desk "Centers of Excellence," and the rise of embedded capability networks where central teams stop writing policy and start acting as curators, parameter architects, and network weavers.
+</Watching>

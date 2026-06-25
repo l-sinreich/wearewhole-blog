@@ -1,0 +1,24 @@
+---
+/**
+ * Stat.astro
+ *
+ * A single large figure + caption inside <Stats>. The citation renders as a
+ * small superscript footnote-style link after the caption.
+ */
+interface Props {
+  figure: string;
+  caption: string;
+  href?: string;
+  footnote?: number;
+}
+const { figure, caption, href, footnote } = Astro.props;
+---
+<div class="wp-stat">
+  <p class="wp-stat__figure">{figure}</p>
+  <p class="wp-stat__caption">
+    {caption}
+    {href && footnote != null && (
+      <sup class="wp-stat__sup"><a href={href} target="_blank" rel="noopener noreferrer">{footnote}</a></sup>
+    )}
+  </p>
+</div>

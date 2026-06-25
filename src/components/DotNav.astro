@@ -1,0 +1,58 @@
+---
+/**
+ * DotNav.astro
+ *
+ * The vertical "page location" tracker fixed to the left edge — one dot per
+ * major section. The active dot reflects which section is currently in view
+ * (scroll-spy via IntersectionObserver). Each dot links to its section anchor;
+ * the section label appears on hover/focus.
+ *
+ * `items` are { id, label } where id matches a section's anchor on the page.
+ */
+interface Item {
+  id: string;
+  label: string;
+}
+interface Props {
+  items: Item[];
+}
+const { items } = Astro.props;
+---
+<nav class="wp-dotnav" aria-label="Page sections">
+  <ul>
+    {items.map((item) => (
+      <li>
+        <a href={`#${item.id}`} class="wp-dotnav__dot" data-target={item.id}>
+          <span class="wp-dotnav__label">{item.label}</span>
+        </a>
+      </li>
+    ))}
+  </ul>
+</nav>
+
+<script is:inline>
+  (function () {
+    const dots = Array.from(document.querySelectorAll('.wp-dotnav__dot'));
+    if (!dots.length) return;
+    const byId = new Map(dots.map((d) => [d.dataset.target, d]));
+    const sections = dots
+      .map((d) => document.getElementById(d.dataset.target))
+      .filter(Boolean);
+
+    function setActive(id) {
+      dots.forEach((d) => d.classList.toggle('is-active', d.dataset.target === id));
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        // Pick the entry nearest the top that is intersecting.
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+        if (visible[0]) setActive(visible[0].target.id);
+      },
+      { rootMargin: '-30% 0px -60% 0px', threshold: 0 }
+    );
+    sections.forEach((s) => observer.observe(s));
+  })();
+</script>

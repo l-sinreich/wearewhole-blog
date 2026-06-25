@@ -1,0 +1,17 @@
+---
+/**
+ * Stats.astro + the <Stat> pattern.
+ *
+ * The row of large figures in "The Moment" (e.g. 60–73% / 90% / 4 in 5).
+ * <Stats> is the flex row; each <Stat> is a big blue figure with a small
+ * caption underneath. Captions may contain a linked footnote.
+ *
+ * Usage in MDX:
+ *   <Stats>
+ *     <Stat figure="60–73%" caption="of enterprise data goes unused" href="https://…" />
+ *   </Stats>
+ */
+---
+<div class="wp-stats">
+  <slot />
+</div>

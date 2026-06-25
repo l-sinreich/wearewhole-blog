@@ -1,0 +1,21 @@
+---
+/**
+ * Scenario.astro
+ *
+ * A "where the gap shows up" example under a line of inquiry.
+ * Subtle left border + slight indent to distinguish it from body prose —
+ * deliberately NOT a card or a box. The `label` (e.g. "Energy", "Philanthropy")
+ * renders in muted small caps; the example text comes through the slot.
+ *
+ * Usage in MDX:
+ *   <Scenario label="Energy">A municipal utility managing…</Scenario>
+ */
+interface Props {
+  label: string;
+}
+const { label } = Astro.props;
+---
+<div class="wp-scenario">
+  <p class="wp-scenario__label">{label}</p>
+  <div class="wp-scenario__body"><slot /></div>
+</div>

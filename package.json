@@ -9,6 +9,7 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@astrojs/mdx": "^4.3.14",
     "@notionhq/client": "^2.3.0",
     "astro": "^5.17.1",
     "notion-to-md": "^3.1.9"

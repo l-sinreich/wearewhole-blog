@@ -1,0 +1,43 @@
+---
+kind: inquiry
+order: 33
+inquiryNumber: 3
+title: "Designing the Handoff between teams and machines: when \"seamless automation\" erases the context that drives decisions"
+version: "1.0"
+versionDate: "2026-06-01"
+changelog:
+  - version: "1.0"
+    date: "2026-06-01"
+    type: published
+    note: "First published."
+---
+import Scenario from '../../components/Scenario.astro';
+import Watching from '../../components/Watching.astro';
+import SubLabel from '../../components/SubLabel.astro';
+import Diagnostic from '../../components/Diagnostic.astro';
+
+Automating decisions carries false promise and new risk. Models are excellent at processing explicit, structured data patterns at scale, and weak at experience-based judgment, human relationships, and unwritten operational context that keep an organization safe. They risk furthering path-dependency on old data models, and on their own are not able to translate new dashboards they create into action.
+
+Optimize purely for frictionless speed and you encounter the paradox of efficiency, stripping out essential unwritten context, creating automated blind spots, and driving customer or worker alienation. Rather than eliminating humans from the loop, responsiveness happens at the handoff. The design job is to let technology carry the administrative load so human judgement can step in where the model is limited.
+
+Because of this lack of symmetry, to call this way of working "collaboration," as some do, obscures accountability. A better frame is "co-performance:" a clear division of labor. *(framing via Csertan, Touchpoint/SDN; "moral crumple zone" via Madeleine Clare Elish)*
+
+<Diagnostic>
+Where does a human nominally "review" automated output in your workflows? Under real conditions, would they catch an error?
+</Diagnostic>
+
+<SubLabel>Where the gap shows up</SubLabel>
+
+<Scenario label="Operations / sensing">
+During an early-stage deployment of an environmental sensor solution, a background model routinely flags a "0" reading during late-evening cycles. Remote data engineers flag the data drop as a pipeline failure and expend hundreds of hours troubleshooting the code. A physical service design pass reveals that the room closes for a cleaning routine at that exact hour. The model recorded an accurate state but lacked the articulated boundaries to explain *why* the information was absent. The data point is noise until it is mapped to real-world human behavior.
+</Scenario>
+
+<Scenario label="Healthcare">
+A hospital clinical triage engine automatically routes patient flows. Nurses are given a nominal "override" option, but because they are under time pressure and have no visibility into how the model derived its recommendation, the override becomes symbolic. The nurse defaults to the algorithm's choice and assumes liability when the system is wrong. Bolting automated routing or predictive analytics engines onto a strained operational floor exacerbates an existing "accountability gap" into a full operational risk.
+</Scenario>
+
+<Watching>
+- What is AI, deployed as the solution, conserving rather than disrupting? What needs disrupting?
+- Teams using AI to process signals and communications from other teams, only to produce a response, with diminishing interpretation needed for robust collaboration.
+- Where generative AI shifts cognitive loads and bottlenecks within an organization rather than removing them.
+</Watching>

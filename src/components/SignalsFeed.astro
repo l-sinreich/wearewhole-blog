@@ -1,0 +1,48 @@
+---
+/**
+ * SignalsFeed.astro
+ *
+ * The "Signals" section: a clean, reverse-chronological list that reads like
+ * field notes — no cards, no carousel. The list lives in its own scroll area
+ * (right-aligned vertical scroller) so it can grow without pushing the closer
+ * far down the page.
+ *
+ * Signals are sourced from Notion at build time (see getAllSignals in
+ * src/lib/notion.ts), so adding one is a Notion entry + the publish button —
+ * the same lightweight loop as the blog.
+ *
+ * Each entry: date (muted Month Year) · one-sentence signal in Lauren's voice ·
+ * linked source with attribution.
+ */
+import { monthYear } from '../lib/format';
+import type { Signal } from '../lib/notion';
+
+interface Props {
+  signals: Signal[];
+}
+const { signals } = Astro.props;
+---
+<div class="wp-signals__scroll">
+  {signals.length === 0 ? (
+    <p class="wp-signals__empty">No signals yet — check back soon.</p>
+  ) : (
+    <ol class="wp-signals__list">
+      {signals.map((s) => (
+        <li class="wp-signal">
+          <p class="wp-signal__date">{monthYear(s.date)}</p>
+          <p class="wp-signal__text">{s.signal}</p>
+          {(s.source || s.attribution) && (
+            <p class="wp-signal__src">
+              {s.url ? (
+                <a href={s.url} target="_blank" rel="noopener noreferrer">{s.source || s.url}</a>
+              ) : (
+                <span>{s.source}</span>
+              )}
+              {s.attribution && <span class="wp-signal__attr"> — {s.attribution}</span>}
+            </p>
+          )}
+        </li>
+      ))}
+    </ol>
+  )}
+</div>
