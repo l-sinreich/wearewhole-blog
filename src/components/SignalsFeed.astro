@@ -11,8 +11,8 @@
  * src/lib/notion.ts), so adding one is a Notion entry + the publish button —
  * the same lightweight loop as the blog.
  *
- * Each entry: date (muted Month Year) · one-sentence signal in Lauren's voice ·
- * linked source with attribution.
+ * Each entry: date (muted Month Year), the one-sentence signal, then a compact
+ * "Attribution, Source" line directly beneath it, with the source linked.
  */
 import { monthYear } from '../lib/format';
 import type { Signal } from '../lib/notion';
@@ -21,28 +21,46 @@ interface Props {
   signals: Signal[];
 }
 const { signals } = Astro.props;
+
+// Clean label for a link when there's no Source name (avoid dumping a raw URL).
+function domainOf(url: string): string {
+  try {
+    return new URL(url).hostname.replace(/^www\./, '');
+  } catch {
+    return url;
+  }
+}
 ---
 <div class="wp-signals__scroll">
   {signals.length === 0 ? (
     <p class="wp-signals__empty">No signals yet — check back soon.</p>
   ) : (
     <ol class="wp-signals__list">
-      {signals.map((s) => (
-        <li class="wp-signal">
-          <p class="wp-signal__date">{monthYear(s.date)}</p>
-          <p class="wp-signal__text">{s.signal}</p>
-          {(s.source || s.attribution) && (
-            <p class="wp-signal__src">
-              {s.url ? (
-                <a href={s.url} target="_blank" rel="noopener noreferrer">{s.source || s.url}</a>
-              ) : (
-                <span>{s.source}</span>
+      {signals.map((s) => {
+        const sourceLabel = s.source || (s.url ? domainOf(s.url) : '');
+        const hasMeta = s.attribution || sourceLabel;
+        return (
+          <li class="wp-signal">
+            <p class="wp-signal__date">{monthYear(s.date)}</p>
+            <div class="wp-signal__body">
+              <p class="wp-signal__text">{s.signal}</p>
+              {hasMeta && (
+                <p class="wp-signal__meta">
+                  {s.attribution && <span>{s.attribution}</span>}
+                  {s.attribution && sourceLabel && <span>, </span>}
+                  {sourceLabel && (
+                    s.url ? (
+                      <a href={s.url} target="_blank" rel="noopener noreferrer">{sourceLabel}</a>
+                    ) : (
+                      <span>{sourceLabel}</span>
+                    )
+                  )}
+                </p>
               )}
-              {s.attribution && <span class="wp-signal__attr"> — {s.attribution}</span>}
-            </p>
-          )}
-        </li>
-      ))}
+            </div>
+          </li>
+        );
+      })}
     </ol>
   )}
 </div>

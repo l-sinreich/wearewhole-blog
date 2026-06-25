@@ -459,12 +459,16 @@ a:hover { color: var(--wp-blue-deep); }
   color: var(--wp-muted);
 }
 .wp-signal__text { font-size: 0.95rem; font-weight: 300; line-height: 1.5; }
-.wp-signal__src {
-  margin-top: 8px;
+.wp-signal__meta {
+  margin-top: 5px;
   font-size: 0.82rem;
+  color: var(--wp-muted);
 }
-.wp-signal__src a { text-decoration: underline; text-underline-offset: 2px; }
-.wp-signal__attr { color: var(--wp-muted); }
+.wp-signal__meta a {
+  color: var(--wp-blue);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
 .wp-signals__empty { color: var(--wp-muted); font-style: italic; }
 
 /* ============================================================
