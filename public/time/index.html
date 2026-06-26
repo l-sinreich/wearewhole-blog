@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Time Report</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 14px;
+      background: #f7f7f5;
+      color: #1a1a1a;
+      padding: 40px 24px;
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    .logo-bar {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 36px;
+    }
+
+    .logo-bar svg { width: 44px; height: 44px; flex-shrink: 0; }
+
+    header { margin-bottom: 28px; }
+
+    h1 { font-size: 22px; font-weight: 600; margin-bottom: 4px; }
+    .subtitle { color: #666; font-size: 13px; }
+
+    .summary {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .stat {
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      border-radius: 8px;
+      padding: 14px 20px;
+      min-width: 120px;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+
+    .stat-value { font-size: 20px; font-weight: 600; }
+
+    /* Filter bar */
+    .filter-bar {
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 20px;
+      display: flex;
+      gap: 16px;
+      align-items: flex-end;
+      flex-wrap: wrap;
+    }
+
+    .filter-group { display: flex; flex-direction: column; gap: 6px; }
+    .filter-group label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    .preset-buttons { display: flex; gap: 6px; flex-wrap: wrap; }
+
+    .preset-btn {
+      padding: 6px 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      background: #fff;
+      font-size: 12px;
+      cursor: pointer;
+      color: #555;
+      white-space: nowrap;
+    }
+
+    .preset-btn:hover { border-color: #999; color: #1a1a1a; }
+    .preset-btn.active { background: #f0a500; color: #fff; border-color: #f0a500; }
+
+    .date-inputs { display: flex; gap: 8px; align-items: center; }
+
+    .date-inputs input[type="date"] {
+      padding: 6px 10px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 13px;
+      background: #fff;
+      color: #1a1a1a;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .date-inputs input[type="date"]:focus { border-color: #f0a500; }
+    .date-inputs span { color: #aaa; font-size: 13px; }
+
+    .project-input {
+      padding: 6px 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 13px;
+      background: #fff;
+      outline: none;
+      width: 160px;
+    }
+
+    .project-input:focus { border-color: #f0a500; }
+
+    /* Table */
+    .download-btn {
+      margin-bottom: 12px;
+      padding: 7px 16px;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 13px;
+      cursor: pointer;
+      color: #555;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .download-btn:hover { border-color: #999; color: #1a1a1a; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    th {
+      text-align: left;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #888;
+      padding: 12px 16px;
+      border-bottom: 1px solid #e5e5e5;
+      background: #fafafa;
+    }
+
+    td {
+      padding: 12px 16px;
+      border-bottom: 1px solid #f0f0f0;
+      vertical-align: top;
+    }
+
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #fafafa; }
+
+    .duration { font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .date { white-space: nowrap; color: #555; }
+    .notes { color: #777; font-size: 12px; }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px;
+      color: #aaa;
+      font-size: 13px;
+    }
+
+    #loading, #error, #no-client {
+      text-align: center;
+      padding: 60px 20px;
+      color: #888;
+    }
+
+    #error { color: #c0392b; }
+  </style>
+</head>
+<body>
+  <div class="logo-bar">
+    <svg viewBox="-6 -6 112 112" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="50" cy="50" r="45" fill="none" stroke="#f0a500" stroke-width="18"/>
+    </svg>
+  </div>
+
+  <div id="loading">Loading…</div>
+  <div id="error" style="display:none"></div>
+  <div id="no-client" style="display:none">No client specified. Add <code>?client=name</code> to the URL.</div>
+
+  <div id="main" style="display:none">
+    <header>
+      <h1 id="client-name"></h1>
+      <div class="subtitle" id="date-range-label"></div>
+    </header>
+
+    <div class="summary">
+      <div class="stat">
+        <div class="stat-label">Total Hours</div>
+        <div class="stat-value" id="total-hours">—</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Entries</div>
+        <div class="stat-value" id="total-entries">—</div>
+      </div>
+    </div>
+
+    <div class="filter-bar">
+      <div class="filter-group">
+        <label>Period</label>
+        <div class="preset-buttons">
+          <button class="preset-btn active" data-preset="all">All time</button>
+          <button class="preset-btn" data-preset="custom">Date range</button>
+        </div>
+      </div>
+
+      <div class="filter-group" id="custom-range" style="display:none">
+        <label>From → To</label>
+        <div class="date-inputs">
+          <input type="date" id="date-from">
+          <span>→</span>
+          <input type="date" id="date-to">
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <label>Project</label>
+        <input class="project-input" id="project-filter" type="text" placeholder="Filter…">
+      </div>
+    </div>
+
+    <button class="download-btn" id="download-csv">↓ Download CSV</button>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Project</th>
+          <th>Task</th>
+          <th>Duration</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody id="entries"></tbody>
+    </table>
+  </div>
+
+  <script>
+    const API_KEY = 'AIzaSyDsqfBX2eOE2mguEbr-FM_-gSp8RI9lfqQ';
+    const SPREADSHEET_ID = '1y0b1PqS0rP8CyzSBbdPsv8QL7QSyAYxxecEWda5qxxY';
+    const SHEET_TAB = 'Time Tracking Database';
+
+    const params = new URLSearchParams(window.location.search);
+    const clientFilter = (params.get('client') || '').toLowerCase().trim();
+
+    let activePreset = 'all';
+    let allClientRows = [];
+
+    function today() {
+      const d = new Date();
+      return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    }
+
+    function toDateStr(d) {
+      return d.toISOString().slice(0, 10);
+    }
+
+    function getPresetRange(preset) {
+      const t = today();
+      switch (preset) {
+        case 'today':
+          return [t, t];
+        case 'yesterday': {
+          const y = new Date(t); y.setDate(t.getDate() - 1);
+          return [y, y];
+        }
+        case 'week': {
+          const mon = new Date(t); mon.setDate(t.getDate() - ((t.getDay() + 6) % 7));
+          const sun = new Date(mon); sun.setDate(mon.getDate() + 6);
+          return [mon, sun];
+        }
+        case 'last-week': {
+          const mon = new Date(t); mon.setDate(t.getDate() - ((t.getDay() + 6) % 7) - 7);
+          const sun = new Date(mon); sun.setDate(mon.getDate() + 6);
+          return [mon, sun];
+        }
+        case 'month': {
+          const start = new Date(t.getFullYear(), t.getMonth(), 1);
+          const end = new Date(t.getFullYear(), t.getMonth() + 1, 0);
+          return [start, end];
+        }
+        case 'last-month': {
+          const start = new Date(t.getFullYear(), t.getMonth() - 1, 1);
+          const end = new Date(t.getFullYear(), t.getMonth(), 0);
+          return [start, end];
+        }
+        default:
+          return [null, null];
+      }
+    }
+
+    function formatDuration(minutes) {
+      const m = parseInt(minutes, 10);
+      if (isNaN(m)) return '—';
+      const h = Math.floor(m / 60);
+      const rem = m % 60;
+      if (h === 0) return `${rem}m`;
+      return rem === 0 ? `${h}h` : `${h}h ${rem}m`;
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return '';
+      const d = new Date(dateStr + 'T00:00:00');
+      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    function renderRows() {
+      const projectFilter = document.getElementById('project-filter').value.toLowerCase().trim();
+      let from, to;
+
+      if (activePreset === 'custom') {
+        const fromVal = document.getElementById('date-from').value;
+        const toVal = document.getElementById('date-to').value;
+        from = fromVal ? new Date(fromVal + 'T00:00:00') : null;
+        to = toVal ? new Date(toVal + 'T00:00:00') : null;
+      } else {
+        [from, to] = getPresetRange(activePreset);
+      }
+
+      let filtered = allClientRows;
+
+      if (from || to) {
+        filtered = filtered.filter(r => {
+          if (!r[4]) return false;
+          const d = new Date(r[4] + 'T00:00:00');
+          if (from && d < from) return false;
+          if (to && d > to) return false;
+          return true;
+        });
+      }
+
+      if (projectFilter) {
+        filtered = filtered.filter(r => (r[2] || '').toLowerCase().includes(projectFilter));
+      }
+
+      const totalMinutes = filtered.reduce((sum, r) => sum + (parseInt(r[7], 10) || 0), 0);
+      document.getElementById('total-hours').textContent = (totalMinutes / 60).toFixed(1) + 'h';
+      document.getElementById('total-entries').textContent = filtered.length;
+
+      const tbody = document.getElementById('entries');
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state">No entries for this period</div></td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(r => `
+        <tr>
+          <td class="date">${formatDate(r[4])}</td>
+          <td>${r[2] || ''}</td>
+          <td>${r[3] || ''}</td>
+          <td class="duration">${formatDuration(r[7])}</td>
+          <td class="notes">${r[8] || ''}</td>
+        </tr>
+      `).join('');
+    }
+
+    async function load() {
+      if (!clientFilter) {
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('no-client').style.display = 'block';
+        return;
+      }
+
+      const range = encodeURIComponent(`${SHEET_TAB}!A2:I`);
+      const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${range}?key=${API_KEY}`;
+
+      try {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`Sheets API error: ${res.status} ${res.statusText}`);
+        const data = await res.json();
+        allClientRows = (data.values || []).filter(r => (r[1] || '').toLowerCase().trim() === clientFilter);
+
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('main').style.display = 'block';
+
+        const displayName = allClientRows.length > 0 ? allClientRows[0][1] : params.get('client');
+        document.getElementById('client-name').textContent = `Time entries for ${displayName}`;
+        document.title = `${displayName} — Time Report`;
+
+        if (allClientRows.length > 0) {
+          const dates = allClientRows.map(r => r[4]).filter(Boolean).sort();
+          document.getElementById('date-range-label').textContent =
+            `${formatDate(dates[0])} – ${formatDate(dates[dates.length - 1])}`;
+        }
+
+        renderRows();
+
+        // Preset buttons
+        document.querySelectorAll('.preset-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            activePreset = btn.dataset.preset;
+            document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('custom-range').style.display =
+              activePreset === 'custom' ? 'flex' : 'none';
+            renderRows();
+          });
+        });
+
+        // Custom date inputs
+        document.getElementById('date-from').addEventListener('change', renderRows);
+        document.getElementById('date-to').addEventListener('change', renderRows);
+
+        // Project filter
+        document.getElementById('project-filter').addEventListener('input', renderRows);
+
+        document.getElementById('download-csv').addEventListener('click', () => {
+          const projectFilter = document.getElementById('project-filter').value.toLowerCase().trim();
+          let from, to;
+          if (activePreset === 'custom') {
+            const fromVal = document.getElementById('date-from').value;
+            const toVal = document.getElementById('date-to').value;
+            from = fromVal ? new Date(fromVal + 'T00:00:00') : null;
+            to = toVal ? new Date(toVal + 'T00:00:00') : null;
+          } else {
+            [from, to] = getPresetRange(activePreset);
+          }
+          let rows = allClientRows;
+          if (from || to) {
+            rows = rows.filter(r => {
+              if (!r[4]) return false;
+              const d = new Date(r[4] + 'T00:00:00');
+              if (from && d < from) return false;
+              if (to && d > to) return false;
+              return true;
+            });
+          }
+          if (projectFilter) rows = rows.filter(r => (r[2] || '').toLowerCase().includes(projectFilter));
+
+          const header = ['Date', 'Project', 'Task', 'Duration (min)', 'Notes'];
+          const csvRows = [header, ...rows.map(r => [r[4], r[2], r[3], r[7], r[8]].map(v => `"${(v||'').replace(/"/g,'""')}"`))];
+          const csv = csvRows.map(r => r.join(',')).join('\n');
+          const blob = new Blob([csv], { type: 'text/csv' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `${params.get('client')}-time-entries.csv`;
+          a.click();
+          URL.revokeObjectURL(url);
+        });
+
+      } catch (err) {
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('error').style.display = 'block';
+        document.getElementById('error').textContent = 'Failed to load data: ' + err.message;
+      }
+    }
+
+    load();
+  </script>
+</body>
+</html>
