@@ -383,7 +383,9 @@
         const res = await fetch(url);
         if (!res.ok) throw new Error(`Sheets API error: ${res.status} ${res.statusText}`);
         const data = await res.json();
-        allClientRows = (data.values || []).filter(r => (r[1] || '').toLowerCase().trim() === clientFilter);
+        allClientRows = (data.values || [])
+          .filter(r => (r[1] || '').toLowerCase().trim() === clientFilter)
+          .sort((a, b) => (a[4] || '').localeCompare(b[4] || ''));
 
         document.getElementById('loading').style.display = 'none';
         document.getElementById('main').style.display = 'block';
